@@ -1,0 +1,87 @@
+﻿@model IEnumerable<yuriPortal.Web.Models.Board>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Board_name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Description)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.IsAttach)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.IsComment)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.IsLike)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.IsDelete)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DefaultUI)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CreateDt)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CreateId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.UpdateDt)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.UpdateId)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Board_name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Description)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.IsAttach)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.IsComment)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.IsLike)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.IsDelete)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DefaultUI)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CreateDt)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CreateId)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.UpdateDt)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.UpdateId)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.Board_id }) |
+            @Html.ActionLink("Details", "Details", new { id=item.Board_id }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.Board_id })
+        </td>
+    </tr>
+}
+
+</table>

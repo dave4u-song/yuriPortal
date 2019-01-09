@@ -1,0 +1,148 @@
+﻿@{
+	Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+@using yuriPortal.Web.Helper
+@model IEnumerable<yuriPortal.Data.Models.Language>
+
+<section class="panel">
+	<div class="form-group">
+		<div class="row">
+			<div class="col-md-6">
+				<button type="button" class="btn btn-primary" onclick="AddText();">Create Text</button>
+				<button type="button" class="btn btn-primary" onclick="Deploy();">Deploy Resource File</button>
+			</div>
+
+			<div class="col-md-2 text-md-right">
+				@Html.DropDownList("uilist", CodeManager.getCodeListByGroup("LANGUAGE", false), null, new { @class = "form-control populate", @id = "ddlLangCode" })
+			</div>
+
+			<div class="col-md-4 text-md-right">
+				<div class="input-group">
+					<input type="text" class="form-control" id="txtSearch">
+					<span class="input-group-btn">
+						<button class="btn btn-primary" type="button" id="btnSearch">Search</button>
+					</span>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<div class="panel-body">
+		<div class="table-responsive" id="divList">
+			<table class="table table-bordered table-striped table-condensed mb-none">
+				<thead>
+					<tr>
+						<th class="text-center">Text ID</th>
+						<th class="text-center">Default Text</th>
+						<th class="text-center">Default Translation</th>
+						<th class="text-center">Language Code</th>
+						<th class="text-center">Translation</th>
+					</tr>
+				</thead>
+
+				<tbody id="ContentList"></tbody>
+
+			</table>
+
+		</div>
+
+
+	</div>
+
+
+	<div id="pagingArea">
+
+	</div>
+
+</section>
+
+
+<script type="text/javascript">
+
+	$(document).ready(function () {
+
+		BindDataToList(1, 15);
+
+		$("#btnSearch").click(function () {
+			BindDataToList(1, 15);
+		});
+
+		$('#ddlLangCode').change(function () {
+			BindDataToList(1, 15);
+		});
+
+		$('#txtSearch').keypress(function (e) {
+			var key = e.which;
+			if (key == 13)  // the enter key code
+			{
+				$("#btnSearch").click();
+				return false;
+			}
+		});  
+
+	});
+
+	function Deploy() {
+		var langCode = "en-CA";	
+		var sendUrl = "/Lang/DeployResource?langCode=" + langCode;
+
+		console.log(sendUrl);
+
+		$.ajax({
+			url: sendUrl,
+			type: 'POST',
+			dataType: "json",
+			contentType: "application/json; charset=utf-8",
+			success: function (result, msg) {
+				//$('#dvLoader').hide();
+				if (result.success) {
+					msgNotify('Success', result.responseText, 'success');
+				}
+				else {
+					msgNotify('Error', result.responseText, 'error');
+				}
+			}
+		});
+
+	}
+
+	function AddText(langId) {
+
+		var url = "";
+		if (langId === undefined)
+			url = "/Lang/CreateLang";
+		else
+			url = "/Lang/ViewContent/?LangId=" + langId;
+
+		OpenPopupWithPage(url);
+	}
+
+
+	function BindDataToList(pageNum, pageSize) {
+
+		$("#ContentList").empty();
+		$("#pagingArea").empty();
+
+		var searchValue = $("#txtSearch").val();
+		var searchLangCode = $("#ddlLangCode option:selected").val();
+
+		$.getJSON("/Lang/GetLangList", { pageNumber: pageNum, pageSize: pageSize, langCode: searchLangCode, seachText: searchValue }, function (response) {
+
+			var rowData = "";
+
+			for (var i = 0; i < response.Data.length; i++) {
+				rowData = rowData + '<tr id="row' + i.toString() + '">';
+				rowData = rowData + '<td><a href="#" onclick="AddText(\'' + response.Data[i].LangId + '\');">' + response.Data[i].LangId + '</a></td>';
+				rowData = rowData + '<td><a href="#" onclick="AddText(\'' + response.Data[i].LangId + '\');">' + response.Data[i].DefaultText + '</a></td>';
+				rowData = rowData + '<td>' + response.Data[i].DefaultTrans + '</td>';
+				rowData = rowData + '<td>' + response.Data[i].LangCode + '</td>';
+				rowData = rowData + '<td>' + response.Data[i].LangTrans + '</td>';
+				rowData = rowData + '</tr>';
+			}
+
+			$("#ContentList").append(rowData);
+			SetPageNavigation(response.TotalPages, response.CurrentPage, response.PageSize);
+		});
+	}
+</script>

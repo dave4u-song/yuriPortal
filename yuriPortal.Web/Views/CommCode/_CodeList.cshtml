@@ -1,0 +1,48 @@
+﻿@model IEnumerable<yuriPortal.Data.Models.CommCode>
+<table class="table table-bordered table-striped table-condensed mb-none">
+	<thead>
+		<tr>
+			<th class="text-center">@Html.DisplayNameFor(model => model.Code_ID)</th>
+			<th class="text-center">@Html.DisplayNameFor(model => model.Code_Value)</th>
+			<th class="text-center">@Html.DisplayNameFor(model => model.Code_Name)</th>
+			<th>@Html.DisplayNameFor(model => model.Description)</th>
+			<th class="text-center">@Html.DisplayNameFor(model => model.IsDelete)</th>
+			<th class="text-center">@Html.DisplayNameFor(model => model.CreateDt)</th>
+			<th class="text-center">@Html.DisplayNameFor(model => model.CreateId)</th>
+			<th class="text-center">Action</th>
+		</tr>
+	</thead>
+	<tbody>
+
+		@foreach (var item in Model)
+		{
+			<tr>
+				<td>
+					@Html.DisplayFor(modelItem => item.Code_ID)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Code_Value)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Code_Name)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.Description)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.IsDelete)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.CreateDt)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.CreateId)
+				</td>
+				<td>
+					@Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+					@Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>

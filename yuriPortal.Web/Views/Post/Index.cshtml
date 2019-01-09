@@ -1,0 +1,259 @@
+﻿
+@{
+	Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+@using yuriPortal.Web.Helper
+
+@model IEnumerable<yuriPortal.Data.Models.BoardPost>
+
+<script type="text/javascript">
+
+	//$("#NewPost").on('click', function () {
+	//	window.location = "/Post/Create";
+	//});
+
+</script>
+
+<section class="panel">
+
+	<div class="form-group">
+		<div class="row">
+			<div class="col-md-6">
+				<button type="button" class="btn btn-primary" onclick="location.href='@Url.Action("Create", "Post")'">New Post</button>
+			</div>
+			<div class="col-md-2 text-md-right">
+				@Html.DropDownList("uilist", CodeManager.getCodeListByGroup("BOARD_TYPE"), null, new { @class = "form-control populate", @id = "ddlDefaultUi" })
+			</div>
+
+			<div class="col-md-4 text-md-right">
+
+				<div class="input-group">
+					<input type="text" class="form-control" id="txtSearch">
+					<span class="input-group-btn">
+						<button class="btn btn-primary" type="button" id="btnSearch">Search</button>
+					</span>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<div class="panel-body">
+
+		<div class="table-responsive">
+			<table class="table table-hover table-mailbox">
+				<tbody id="ContentList"></tbody>
+				@*<tbody>
+						<tr>
+							<td>
+								<div class="checkbox">
+									<img src="~/files/userpic/1.jpg" class="avatar--tiny" alt="Avatar">
+								</div>
+							</td>
+							<td><a href="#">Jeremy Massey</a></td>
+							<td>
+								<a href="/Post/Details/2">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</a>
+							</td>
+							<td><i class="fa fa-paperclip"></i></td>
+							<td class="text-right mail-date">Tue, Nov 25</td>
+						</tr>
+					</tbody>*@
+			</table>
+		</div>
+	</div>
+	<div class="panel-footer">
+		<div class="mailbox-pagination" id="pagingArea">
+			<i class="fa fa-eye"> </i> 6 unread
+		</div>
+	</div>
+
+</section>
+
+
+<script type="text/javascript">
+
+	function afterSave() {
+		BindDataList(1, 15);
+	}
+
+	function contentView() {
+		alert(1);
+	}
+
+	$(document).ready(function () {
+
+		BindDataList(1, 15);
+
+		$("#btnSearch").click(function () {
+			alert("Search board.")
+		});
+	});
+
+	function ViewPostDetail(postid) {
+		alert(postid);
+	}
+
+	function ToJavaScriptDate(value) {
+		var pattern = /Date\(([^)]+)\)/;
+		var results = pattern.exec(value);
+		var dt = new Date(parseFloat(results[1]));
+
+		return (dt.getMonth() + 1) + "/" + dt.getDate() + "/" + dt.getFullYear();
+	}
+
+	function BindDataList(pageNum, pageSize) {
+
+		//<tr>
+		//	<td>
+		//		<div class="checkbox">
+		//			<img src="~/files/userpic/1.jpg" class="avatar--tiny" alt="Avatar">
+		//						</div>
+		//					</td>
+		//		<td><a href="#">Jeremy Massey</a></td>
+		//		<td>
+		//			<a href="/Post/Details/2">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</a>
+		//		</td>
+		//		<td><i class="fa fa-paperclip"></i></td>
+		//		<td class="text-right mail-date">Tue, Nov 25</td>
+		//</tr>
+
+		$("#ContentList").empty();
+		$("#pagingArea").empty();
+
+		var searchValue = $("#txtSearch").val();
+		var searchCond = $("#ddlDefaultUi option:selected").val();
+
+		$.getJSON("/Post/GetPostList", { pageNumber: pageNum, pageSize: pageSize, seachText: searchValue, seachCondition: searchCond }, function (response) {
+
+			var rowData = "";
+
+			if (response.Data.length > 0) {
+				for (var i = 0; i < response.Data.length; i++) {
+
+					var userInfo = "";
+					var attachMark = "";
+
+					userInfo = userInfo + '<div class="checkbox">';
+					userInfo = userInfo + '	   <img src="/Files/Userpic/' + response.Data[i].userpic + '" class="avatar--tiny" alt="Avatar">';
+					userInfo = userInfo + '</div>';
+
+					if (response.Data[i].AttachCount > 0)
+						attachMark = '<i class="fa fa-paperclip"></i>';
+					else
+						attachMark = '&nbsp;';
+
+					rowData = rowData + "<tr>";
+					rowData = rowData + '<td>' + userInfo + '</td>';
+					rowData = rowData + '<td><a href="/Post/Details/' + response.Data[i].PostId + '">' + response.Data[i].UserFullName + '</a></td>';
+					rowData = rowData + '<td><a href="/Post/Details/' + response.Data[i].PostId + '">' + response.Data[i].PostSubject + '</a></td>';
+					rowData = rowData + '<td>' + attachMark + '</td>';
+					rowData = rowData + '<td "text-right mail-date">' + ToJavaScriptDate(response.Data[i].CreateDt) + '</td>';
+					rowData = rowData + "</tr>";
+				}
+			}
+			else {
+				rowData = '<tr><td class="text-center">No data found</td></tr>';
+			}
+
+			$("#ContentList").append(rowData);
+
+			SetPagination(response.TotalCount, response.TotalPages, response.CurrentPage, response.PageSize);
+		});
+	}
+
+	function GetIsValue(val) {
+
+		var strText = "False";
+
+		if (val == "1")
+			strText = "True";
+
+		return strText;
+	}
+
+	function getListNum(current, { range, pages, start = 1 }) {
+		const paging = [];
+		var i = Math.min(pages + start - range, Math.max(start, current - (range / 2 | 0)));
+		const end = i + range;
+
+		while (i < end) {
+			paging.push(i++)
+		}
+
+		return paging;
+	}
+
+
+	function SetPagination(totalCount, totalPage, currentPage, pagesize) {
+
+		console.log(totalCount);
+		console.log(totalPage);
+		console.log(totalPage);
+		console.log(currentPage);
+		console.log(pagesize);
+
+		var PagingHtml = "";
+		var CurrentPage = currentPage;
+		var PageNumberArray = [];
+
+		var extraCnt = (totalCount % pagesize != 0) ? 1 : 0;
+
+		var pageCount = parseInt(totalCount / pagesize) + extraCnt;
+
+		console.log("===========================================");
+		console.log(parseInt(totalCount / pagesize));
+		console.log(extraCnt);
+		console.log(pageCount);
+		console.log("===========================================");
+
+		const pageNums = { range: pageCount, pages: totalPage };
+
+		PageNumberArray = getListNum(currentPage, pageNums);
+
+
+		console.log(PageNumberArray);
+
+		var FirstPage = 1;
+		var LastPage = totalPage;
+		if (totalPage != currentPage) {
+			var ForwardOne = currentPage + 1;
+		}
+		var BackwardOne = 1;
+		if (currentPage > 1) {
+			BackwardOne = currentPage - 1;
+		}
+
+		PagingHtml = PagingHtml + '<ul class="pagination">';
+
+		if (currentPage == 1) {
+			PagingHtml = PagingHtml + '<li class="first disabled"><a href="#"><i class="fa fa-angle-double-left"></i></a></li>' +
+				'<li class="prev disabled"><a href="#"><i class="fa fa-angle-left"></i></a></li>';
+		}
+		else {
+			PagingHtml = PagingHtml + '<li class="first"><a href="#" onclick="BindDataList(' + FirstPage + ')"><i class="fa fa-angle-double-left"></i></a></li>' +
+				'<li class="prev"><a href="#" onclick="BindDataList(' + BackwardOne + ')"><i class="fa fa-angle-left"></i></a></li>';
+		}
+
+		for (var i = 0; i < PageNumberArray.length; i++) {
+
+			if (CurrentPage == PageNumberArray[i])
+				PagingHtml = PagingHtml + '<li class="active"><a href = "#">' + PageNumberArray[i] + '</a></li>';
+			else
+				PagingHtml = PagingHtml + '<li><a onclick="BindDataList(' + PageNumberArray[i] + ')" href="#">' + PageNumberArray[i] + '</a></li>';
+		}
+
+		if (currentPage >= totalPage) {
+			PagingHtml = PagingHtml + '<li class="next disabled"><a href="#"><i class="fa fa-angle-right"></i></a></li>';
+			PagingHtml = PagingHtml + '<li class="last disabled"><a href="#"><i class="fa fa-angle-double-right"></i></a></li></ul>';
+		}
+		else {
+			PagingHtml = PagingHtml + '<li class="next"><a href="#" onclick="BindDataList(' + ForwardOne + ')"><i class="fa fa-angle-right"></i></a></li>';
+			PagingHtml = PagingHtml + '<li class="last"><a href="#" onclick="BindDataList(' + LastPage + ')"><i class="fa fa-angle-double-right"></i></a></li></ul>';
+		}
+
+		$("#pagingArea").append(PagingHtml);
+
+	}
+</script>
+
+

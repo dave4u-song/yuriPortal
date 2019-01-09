@@ -1,0 +1,389 @@
+﻿@{
+	Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@*@model IEnumerable<yuriPortal.Web.Models.ApplicationUser>*@
+@model IEnumerable<yuriPortal.Data.Models.ApplicationUser>
+<section class="panel">
+	<div class="form-group">
+		<div class="row">
+			<div class="col-md-9">
+				<button type="button" class="btn btn-primary" onclick="CreateUser();">Create User</button>
+				<button type="button" class="btn btn-primary" onclick="RandomCreateUser();">Random Create User</button>
+			</div>
+			<div class="col-md-3 text-md-right">
+
+				@*@Html.DropDownList("groupList", ViewBag.groupList as SelectList, null, new { @class = "form-control populate", @id = "selCodeGroup" })*@
+
+			</div>
+		</div>
+	</div>
+
+	<div class="panel-body">
+		<div class="table-responsive" id="divList">
+			<table class="table table-bordered table-striped table-condensed mb-none">
+				<thead>
+					<tr>
+						<th class="text-center">User Id</th>
+						<th class="text-center">User Name</th>
+						<th class="text-center">Address</th>
+						<th class="text-center">Phone Number</th>
+						<th class="text-center">Status</th>
+						<th class="text-center">Last Access Date</th>
+						<th class="text-center">Language</th>
+						<th class="text-center">Change Status</th>
+					</tr>
+				</thead>
+				<tbody id="tblData">
+
+				</tbody>
+			</table>
+
+		</div>
+
+
+	</div>
+
+
+	<div id="pagingArea">
+
+	</div>
+
+</section>
+
+
+<script type="text/javascript">
+
+	function afterSave() {
+		GetPageData(1, 15);
+	}
+
+	function CreateUser() {
+		$.magnificPopup.open(
+		{
+			type: 'ajax',
+			closeOnBgClick: false,
+			closeBtnInside: false,
+			enableEscapeKey: true,
+			mainClass: 'mfp-fade',
+			items: {
+				src: "/User/UserCreate"
+			},
+			callbacks: {
+				open: function () {
+					$.magnificPopup.instance.close = function () {
+						$.magnificPopup.proto.close.call(this);
+					}
+				},
+				ajaxContentAdded: function () {
+					var m = this;
+					this.content.find('.modal-dismiss').on('click', function (e) {
+						e.preventDefault();
+						m.close();
+					});
+				}
+			},
+		});
+	}
+
+	function RandomCreateUser() {
+		;
+	}
+
+	function AddCodePopup(action) {
+
+		let data = {
+			action: action,
+			group: $("#selCodeGroup option:selected").val(),
+		};
+
+		if ($("#selCodeGroup").prop('selectedIndex') == 0) {
+
+			alert("Please select the Code group.");
+
+			$.magnificPopup.close();
+			return false;
+		}
+		else {
+			$.magnificPopup.open(
+				{
+					type: 'ajax',
+					closeOnBgClick: false,
+					closeBtnInside: false,
+					enableEscapeKey: true,
+					mainClass: 'mfp-fade',
+					items: {
+						src: "/CommCode/CodeNew?group=" + $("#selCodeGroup option:selected").val()
+					},
+					callbacks: {
+						open: function () {
+							$.magnificPopup.instance.close = function () {
+								$.magnificPopup.proto.close.call(this);
+							}
+						},
+						ajaxContentAdded: function () {
+							var m = this;
+							this.content.find('.modal-dismiss').on('click', function (e) {
+								e.preventDefault();
+								m.close();
+							});
+						}
+					},
+				});
+		}
+	}
+
+	function openUserDetail(userName) {
+		$.magnificPopup.open(
+			{
+				type: 'ajax',
+				closeOnBgClick: false,
+				closeBtnInside: false,
+				enableEscapeKey: true,
+				mainClass: 'mfp-fade',
+				items: {
+					src: "/User/UserCreate"
+				},
+				callbacks: {
+					open: function () {
+						$.magnificPopup.instance.close = function () {
+							$.magnificPopup.proto.close.call(this);
+						}
+					},
+					ajaxContentAdded: function () {
+						var m = this;
+						this.content.find('.modal-dismiss').on('click', function (e) {
+							e.preventDefault();
+							m.close();
+						});
+					}
+				},
+			});
+	}
+
+	$(document).ready(function () {
+	
+		$('#selCodeGroup').change(function() {
+		  GetPageData(1, 15);
+		});
+
+		GetPageData(1, 15);
+
+		$("#btnCode").click(function () {
+			if ($("#selCodeGroup").prop('selectedIndex') == 0) {
+
+				alert("Please select the Code group.");
+
+				$.magnificPopup.close();
+				return false;
+			}
+			else {
+
+				AddCodePopup("ADD");
+			}
+		});
+
+		$(".btn-xs").click(function (e) {
+			alert(3);
+			var options = {};
+			var rowId = $(this).attr("data-id");
+			var $row = $("#" + rowId);
+			$row.fadeOut(1000, function () {
+				$row.addClass("warning");
+			});
+		});
+
+
+
+	});
+
+	function activeRow(obj) {
+		//var rowId = $(this).attr("data-id");
+		var rowId = $(obj).attr("data-id");;
+		var $row = $("#" + rowId);
+
+		$row.removeClass("warning");
+
+	}
+
+	function changeRowStauts(obj) {
+		//var rowId = $(this).attr("data-id");
+
+		var rowId = $(obj).attr("data-id");;
+		var $row = $("#row" + rowId);
+
+		var $groupVal = $("#groupVal" + rowId);
+		var $codeVal = $("#codeVal" + rowId);
+		var $td = $("#td" + rowId);
+		var strChange = "";
+		var strAction = $(obj).text();
+
+		if (strAction == "Delete") {
+			$row.addClass("warning");
+			$(obj).removeClass("btn btn-xs btn-danger");
+			$(obj).addClass("btn btn-xs btn-primary");
+			$(obj).text("Active");
+			strChange = "Deleted";
+		}
+		else {
+			$row.removeClass("warning");
+			$(obj).text("Delete");
+			$(obj).removeClass("btn btn-xs btn-primary");
+			$(obj).addClass("btn btn-xs btn-danger");
+			strChange = "Active";
+		}
+
+		var CodeGroupID = $groupVal.val();
+		var codeValue = $codeVal.val();
+
+		$.ajax({
+			url: '@Url.Action("UpdateCodeStatus", "CommCode")',
+				type: 'POST',
+			data: JSON.stringify({ "groupVal": CodeGroupID, "codeVal": codeValue, "Action": strAction}),
+				dataType: "json",
+				contentType: "application/json; charset=utf-8",
+			success: function (result) {
+				if (result.success) {
+					$td.text(strChange);
+				}
+				else {
+					alert(result.SaveError);
+				}
+			},
+			error: function (result) {
+				alert("Wrong == " + result);
+			}
+		});
+
+	}
+
+	function ToJavaScriptDate(value) {
+
+		if (value != null) {
+			var pattern = /Date\(([^)]+)\)/;
+			var results = pattern.exec(value);
+			var dt = new Date(parseFloat(results[1]));
+
+			return (dt.getMonth() + 1) + "/" + dt.getDate() + "/" + dt.getFullYear();
+		}
+		else {
+			return "";
+		}
+	}
+
+	function GetPageData(pageNum, pageSize) {
+		//After every trigger remove previous data and paging
+		$("#tblData").empty();
+		$("#pagingArea").empty();
+
+		var searchValue = "";
+
+		$.getJSON("/User/GetUsers", { pageNumber: pageNum, pageSize: pageSize, searchText: searchValue }, function (response) {
+			//alert(JSON.parse(response));
+
+			var rowData = "";
+			for (var i = 0; i < response.Data.length; i++) {
+
+				var buttonType = "";
+				var deleteText = "";
+				if (response.Data[i].IsDelete) {
+					rowData = rowData + '<tr class="warning" id="row' + i.toString() + '">';
+					buttonType = '<button type="button" class="btn btn-xs btn-primary" onclick="changeRowStauts(this);" data-id="' + i.toString() + '" >Active</button>';
+					deleteText = "Deleted";
+				}
+				else {
+					rowData = rowData + '<tr id="row' + i.toString() + '">';
+					buttonType = '<button type="button" class="btn btn-xs btn-danger" onclick="changeRowStauts(this);" data-id="' + i.toString() + '" >Delete</button>';
+					deleteText = "Active";
+				}
+
+				rowData = rowData + '<td><a href="/User/UserDetail/?userNm=' + encodeURIComponent(response.Data[i].UserName) +'">' + response.Data[i].UserName + '</a><input type="hidden" value="' + response.Data[i].Id + '" id="groupVal' + i.toString() + '"></td>';
+				rowData = rowData + '<td>' + response.Data[i].FirstName + ' ' + response.Data[i].LastName + '<input type="hidden" value="' + response.Data[i].UserName + '" id="codeVal' + i.toString() + '"></td>';
+				rowData = rowData + '<td>' + response.Data[i].City + ', ' + response.Data[i].Province + '</td>';
+				rowData = rowData + '<td>' + response.Data[i].PhoneNumber + '</td>';
+				rowData = rowData + '<td id="td' + i.toString() + '">' + deleteText + '</td>';
+				rowData = rowData + '<td>' + ToJavaScriptDate(response.Data[i].LastAccessDt) + '</td>';
+				rowData = rowData + '<td>' + response.Data[i].LanguageCd + '</td>';
+				rowData = rowData + '<td class="text-center">' + buttonType + '</td></tr>';
+
+			}
+
+			$("#tblData").append(rowData);
+			PaggingTemplate(response.TotalPages, response.CurrentPage, response.PageSize);
+		});
+	}
+
+
+	function getListNum(current, { range, pages, start = 1 }) {
+		const paging = [];
+		var i = Math.min(pages + start - range, Math.max(start, current - (range / 2 | 0)));
+		const end = i + range;
+
+		while (i < end) {
+			paging.push(i++)
+		}
+
+		return paging;
+	}
+
+	function PaggingTemplate(totalPage, currentPage, pagesize) {
+		var template = "";
+		var TotalPages = totalPage;
+		var CurrentPage = currentPage;
+		var PageNumberArray = [];
+
+		var pageCount = (TotalPages / pagesize) + (TotalPages % pagesize != 0) ? 1 : 0 ;
+		const pageNums = { range: pageCount, pages: TotalPages };
+
+		PageNumberArray = getListNum(currentPage, pageNums);
+
+
+		console.log(PageNumberArray);
+
+		var FirstPage = 1;
+		var LastPage = totalPage;
+		if (totalPage != currentPage) {
+			var ForwardOne = currentPage + 1;
+		}
+		var BackwardOne = 1;
+		if (currentPage > 1) {
+			BackwardOne = currentPage - 1;
+		}
+
+		//var firstDisabled = (currentPage == 1) ? "disabled" : "";
+		//var lastDisabled = (currentPage == TotalPages) ? "disabled" : "";
+
+		//template = '<div class="col-md-6 pull-left">' + CurrentPage + ' of ' + TotalPages + ' pages</div>'
+		template = template + '<ul class="pagination">';
+
+		if (currentPage == 1) {
+			template = template + '<li class="first disabled"><a href="#"><i class="fa fa-angle-double-left"></i></a></li>' +
+				'<li class="prev disabled"><a href="#"><i class="fa fa-angle-left"></i></a></li>';
+		}
+		else {
+			template = template + '<li class="first"><a href="#" onclick="GetPageData(' + FirstPage + ')"><i class="fa fa-angle-double-left"></i></a></li>' +
+				'<li class="prev"><a href="#" onclick="GetPageData(' + BackwardOne + ')"><i class="fa fa-angle-left"></i></a></li>';
+		}
+
+		for (var i = 0; i < PageNumberArray.length; i++) {
+
+			if (CurrentPage == PageNumberArray[i])
+				template = template + '<li class="active"><a href = "#">' + PageNumberArray[i] + '</a></li>';
+			else
+				template = template + '<li><a onclick="GetPageData(' + PageNumberArray[i] + ')" href="#">' + PageNumberArray[i] + '</a></li>';
+		}
+
+		if (currentPage >= TotalPages) {
+			template = template + '<li class="next disabled"><a href="#"><i class="fa fa-angle-right"></i></a></li>';
+			template = template + '<li class="last disabled"><a href="#"><i class="fa fa-angle-double-right"></i></a></li></ul>';
+		}
+		else {
+			template = template + '<li class="next"><a href="#" onclick="GetPageData(' + ForwardOne + ')"><i class="fa fa-angle-right"></i></a></li>';
+			template = template + '<li class="last"><a href="#" onclick="GetPageData(' + LastPage + ')"><i class="fa fa-angle-double-right"></i></a></li></ul>';
+		}
+
+		$("#pagingArea").append(template);
+
+	}
+</script>
+

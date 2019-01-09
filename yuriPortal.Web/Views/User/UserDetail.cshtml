@@ -1,0 +1,484 @@
+﻿@using yuriPortal.Web.Helper
+@model yuriPortal.Data.ViewModel.UserSaveViewModel
+@{
+	Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<script>
+
+	$("document").ready(function () {
+
+		//$("#fileUpdatePhoto").change(function () {
+		$('#fileUpdatePhoto').on('change', function (e) {
+
+			var files = e.target.files;
+			var userName = $("#hidUserName").val();
+			var formData = new FormData();
+
+			formData.append("FileUpload", files[0]);
+			formData.append("UserName", userName);
+
+			$.ajax({
+				type: "POST",
+				url: '/User/SaveUserPhoto/?UserName=' + encodeURIComponent(userName),
+				data: formData,
+				dataType: 'json',
+				contentType: false,
+				processData: false,
+				success: function (msg) {
+					console.log(msg);
+					$("#imgUserPic").attr('src', '/Files/Userpic/' + msg.fileName);
+				},
+				error: function (error) {
+					alert("errror");
+				}
+			});
+
+
+		});
+	});
+
+</script>
+
+<div class="row">
+	<div class="col-md-4 col-lg-3">
+
+		<section class="panel">
+			<div class="panel-body">
+				<div class="thumb-info mb-md">
+					<img src="@Html.Raw(Model.UserPic)" id="imgUserPic" class="rounded img-responsive">
+					<div class="thumb-info-title">
+						<span class="thumb-info-inner">@Html.Label(Model.FirstName) @Html.Label(Model.LastName)</span>
+					</div>
+				</div>
+				<label class="btn btn-block btn-primary">
+					Update Photo<input type="file" id="fileUpdatePhoto" style="display: none;" accept="image/*">
+				</label>
+				<input type="hidden" id="hidUserName" value="@Html.Raw(Model.UserId)" />
+				<hr class="dotted short">
+
+				<div class="clearfix">
+					<ul class="list-unstyled user_data">
+						<li>
+							<i class="fa fa-map-marker user-profile-icon"></i> @Html.Label(Model.AddressCity) @Html.Label(Model.AddressProvince), @Html.Label(Model.AddressCountry)
+						</li>
+
+						<li>
+							<i class="fa fa-pencil user-profile-icon"></i> @Html.Raw(Model.Email)
+						</li>
+
+						<li>
+							<i class="fa fa-mobile user-profile-icon"></i> @Html.Label(Model.PhoneNumber)
+						</li>
+					</ul>
+				</div>
+
+				<hr class="dotted short">
+
+				<div class="social-icons-list">
+					<a rel="tooltip" data-placement="bottom" target="_blank" href="http://www.facebook.com" data-original-title="Facebook"><i class="fa fa-facebook"></i><span>Facebook</span></a>
+					<a rel="tooltip" data-placement="bottom" href="http://www.twitter.com" data-original-title="Twitter"><i class="fa fa-twitter"></i><span>Twitter</span></a>
+					<a rel="tooltip" data-placement="bottom" href="http://www.linkedin.com" data-original-title="Linkedin"><i class="fa fa-linkedin"></i><span>Linkedin</span></a>
+				</div>
+
+			</div>
+		</section>
+
+	</div>
+
+	<div class="col-md-8 col-lg-9">
+
+		<div class="tabs">
+			<ul class="nav nav-tabs tabs-primary">
+				<li class="active">
+					<a href="#overview" data-toggle="tab">Activity Overview</a>
+				</li>
+				<li>
+					<a href="#edit" data-toggle="tab">Edit Profile</a>
+				</li>
+			</ul>
+			<div class="tab-content">
+				<div id="overview" class="tab-pane active">
+					<h4 class="mb-md">Analyze Access</h4>
+
+					<!-- bar charts group -->
+					<div class="col-md-6 col-sm-6 col-xs-12">
+						<div class="x_panel">
+							<div class="x_title">
+								<h2>Bar Chart Group <small>Sessions</small></h2>
+								<ul class="nav navbar-right panel_toolbox">
+									<li>
+										<a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+									</li>
+									<li class="dropdown">
+										<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+										<ul class="dropdown-menu" role="menu">
+											<li>
+												<a href="#">Settings 1</a>
+											</li>
+											<li>
+												<a href="#">Settings 2</a>
+											</li>
+										</ul>
+									</li>
+									<li>
+										<a class="close-link"><i class="fa fa-close"></i></a>
+									</li>
+								</ul>
+								<div class="clearfix"></div>
+							</div>
+							<div class="x_content1">
+								<div id="graph_bar_group" style="width:100%; height:280px;"></div>
+							</div>
+						</div>
+					</div>
+					<div class="clearfix"></div>
+					<!-- /bar charts group -->
+
+					<h4 class="mb-xlg">Timeline</h4>
+
+					<div class="timeline timeline-simple mt-xlg mb-md">
+						<div class="tm-body">
+							<div class="tm-title">
+								<h3 class="h5 text-uppercase">November 2013</h3>
+							</div>
+							<ol class="tm-items">
+								<li>
+									<div class="tm-box">
+										<p class="text-muted mb-none">7 months ago.</p>
+										<p>
+											It's awesome when we find a good solution for our projects, Porto Admin is <span class="text-primary">#awesome</span>
+										</p>
+									</div>
+								</li>
+								<li>
+									<div class="tm-box">
+										<p class="text-muted mb-none">7 months ago.</p>
+										<p>
+											What is your biggest developer pain point?
+										</p>
+									</div>
+								</li>
+								<li>
+									<div class="tm-box">
+										<p class="text-muted mb-none">7 months ago.</p>
+										<p>
+											Checkout! How cool is that!
+										</p>
+										<div class="thumbnail-gallery">
+											<a class="img-thumbnail lightbox" href="/Images/projects/project-4.jpg" data-plugin-options='{ "type":"image" }'>
+												<img class="img-responsive" width="215" src="/Images/projects/project-4.jpg">
+												<span class="zoom">
+													<i class="fa fa-search"></i>
+												</span>
+											</a>
+										</div>
+									</div>
+								</li>
+							</ol>
+						</div>
+					</div>
+				</div>
+				<div id="edit" class="tab-pane">
+
+					<form id="form" class="form-horizontal" method="get">
+						<h4 class="mb-xlg">Personal Information</h4>
+						<fieldset>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">First Name <span class="required">*</span></label>
+								<div class="col-sm-9">
+									<input type="text" name="firstname" class="form-control" id="firstname" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">Last Name <span class="required">*</span></label>
+								<div class="col-sm-9">
+									<input type="text" name="lastname" class="form-control" id="lastname" />
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label class="col-sm-3 control-label">Email <span class="required">*</span></label>
+								<div class="col-sm-9">
+									<div class="input-group">
+										<span class="input-group-addon">
+											<i class="fa fa-envelope"></i>
+										</span>
+										<input type="email" id="email" name="email" class="form-control" placeholder="dave4u.song@gmail.com" />
+									</div>
+								</div>
+								<div class="col-sm-9">
+
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label class="col-sm-3 control-label">Phone Number</label>
+								<div class="col-sm-9">
+									<input type="url" name="phonenumber" class="form-control" id="txtPhone" />
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label class="col-sm-3 control-label">Street</label>
+								<div class="col-sm-9">
+									<input type="text" name="Street" class="form-control" id="txtStreet" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">City</label>
+								<div class="col-sm-9">
+									<input type="text" name="City" class="form-control" id="txtCity" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">Province</label>
+								<div class="col-sm-9">
+									<input type="text" name="Province" class="form-control" id="txtProvince" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">Country</label>
+								<div class="col-sm-9">
+									<input type="text" name="Country" class="form-control" id="txtCountry" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">Postal Code/ZIP</label>
+								<div class="col-sm-9">
+									<input type="text" name="PostalCode" class="form-control" id="txtPostalCd" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">Gender</label>
+								<div class="col-sm-9">
+									@Html.DropDownList("genderlist", CodeManager.getCodeListByGroup("GENDER"), null, new { @class = "form-control populate", @id = "ddlGender" })
+									<label class="error" for="Gender"></label>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label class="col-sm-3 control-label">Language</label>
+								<div class="col-sm-9">
+									@Html.DropDownList("genderlist", CodeManager.getCodeListByGroup("LANGUAGE"), null, new { @class = "form-control populate", @id = "ddlLanguage" })
+									<label class="error" for="Language"></label>
+								</div>
+							</div>
+
+						</fieldset>
+						<div class="panel-footer">
+							<div class="row">
+								<div class="col-md-9 col-md-offset-3">
+									<button type="submit" class="btn btn-primary">Update</button>
+									<button type="reset" class="btn btn-default">Reset</button>
+								</div>
+							</div>
+						</div>
+					</form>
+
+					<hr class="dotted tall">
+					<form id="passwordform" class="form-horizontal" method="post">
+						<h4 class="mb-xlg">Change Password</h4>
+						<fieldset class="mb-xl">
+							<div class="form-group">
+								<label class="col-md-3 control-label" for="CurrentPassword">Current Password</label>
+								<div class="col-md-9">
+									<input type="password" class="form-control" id="CurrentPassword" name="CurrentPassword" placeholder="Current password" required>
+
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label" for="inputPassword">New Password</label>
+								<div class="col-md-9">
+									<input type="password" class="form-control" id="inputPassword" name="inputPassword" placeholder="New password" required>
+									<div class="help-block">Minimum of 8 characters</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label" for="inputPasswordConfirm">Repeat New Password</label>
+								<div class="col-md-9">
+									<input type="password" class="form-control" id="inputPasswordConfirm" name="inputPasswordConfirm" placeholder="Confirm password" required>
+									<div class="help-block with-errors"></div>
+								</div>
+							</div>
+						</fieldset>
+						<div class="panel-footer">
+							<div class="row">
+								<div class="col-md-9 col-md-offset-3">
+									<button type="submit" class="btn btn-primary">Change Password</button>
+								</div>
+							</div>
+						</div>
+
+					</form>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+
+<script type="text/javascript">
+	$(document).ready(function () {
+		$("#form").validate({
+			rules: {
+				firstname: "required",
+				lastname: "required",
+				username: {
+					required: true,
+					minlength: 2
+				},
+				password: {
+					required: true,
+					minlength: 5
+				},
+				confirm_password: {
+					required: true,
+					minlength: 5,
+					equalTo: "#password"
+				},
+				email: {
+					required: true,
+					email: true
+				},
+				agree: "required"
+			},
+			messages: {
+				firstname: "Please enter your firstname",
+				lastname: "Please enter your lastname",
+				username: {
+					required: "Please enter a username",
+					minlength: "Your username must consist of at least 2 characters"
+				},
+				password: {
+					required: "Please provide a password",
+					minlength: "Your password must be at least 5 characters long"
+				},
+				confirm_password: {
+					required: "Please provide a password",
+					minlength: "Your password must be at least 5 characters long",
+					equalTo: "Please enter the same password as above"
+				},
+				email: "Please enter a valid email address",
+				agree: "Please accept our policy"
+			},
+			//errorElement: "em",
+			errorPlacement: function (error, element) {
+				// Add the `help-block` class to the error element
+				//error.addClass("help-block");
+
+				//if (element.prop("type") === "checkbox") {
+				//	error.insertAfter(element.parent("label"));
+				//} else {
+				//	error.insertAfter(element);
+				//}
+				var placement = element.closest('.input-group');
+				if (!placement.get(0)) {
+					placement = element;
+				}
+				if (error.text() !== '') {
+					placement.after(error);
+				}
+			},
+			highlight: function (label) {
+				//$(element).parents(".col-sm-5").addClass("has-error").removeClass("has-success");
+				$(label).closest('.form-group').removeClass('has-success').addClass('has-error');
+			},
+			unhighlight: function (label) {
+				//$(element).parents(".col-sm-5").addClass("has-success").removeClass("has-error");
+				$(label).closest('.form-group').addClass('has-success').removeClass('has-error');
+			}
+		});
+
+		$("#passwordform").validate({
+			rules: {
+				CurrentPassword: {
+					required: true,
+					minlength: 8
+				},
+				inputPassword: {
+					required: true,
+					minlength: 8
+				},
+				inputPasswordConfirm: {
+					required: true,
+					minlength: 8,
+					equalTo: "#inputPassword"
+				}
+			},
+			messages: {
+				CurrentPassword: {
+					required: "Please provide the current password",
+					minlength: "Your password must be at least 8 characters long"
+				},
+				inputPassword: {
+					required: "Please provide a new password",
+					minlength: "Your password must be at least 8 characters long"
+				},
+				inputPasswordConfirm: {
+					required: "Please provide a new password",
+					minlength: "Your password must be at least 8 characters long",
+					equalTo: "Please enter the same password as above"
+				}
+			},
+			//errorElement: "em",
+			errorPlacement: function (error, element) {
+				// Add the `help-block` class to the error element
+				//error.addClass("help-block");
+
+				//if (element.prop("type") === "checkbox") {
+				//	error.insertAfter(element.parent("label"));
+				//} else {
+				//	error.insertAfter(element);
+				//}
+				var placement = element.closest('.input-group');
+				if (!placement.get(0)) {
+					placement = element;
+				}
+				if (error.text() !== '') {
+					placement.after(error);
+				}
+			},
+			highlight: function (label) {
+				//$(element).parents(".col-sm-9").addClass("has-error").removeClass("has-success");
+				$(label).closest('.form-group').removeClass('has-success').addClass('has-error');
+			},
+			unhighlight: function (label) {
+				//$(element).parents(".col-sm-9").addClass("has-success").removeClass("has-error");
+				$(label).closest('.form-group').addClass('has-success').removeClass('has-error');
+			}
+
+			//	success: function (label, element) {
+			//	// Add the span element, if doesn't exists, and apply the icon classes to it.
+			//	if (!$(element).next("span")[0]) {
+			//		$("<span class='glyphicon glyphicon-ok form-control-feedback'></span>").insertAfter($(element));
+			//	}
+			//},
+			//highlight: function (element, errorClass, validClass) {
+			//	$(element).parents(".col-sm-5").addClass("has-error").removeClass("has-success");
+			//	$(element).next("span").addClass("glyphicon-remove").removeClass("glyphicon-ok");
+			//},
+			//unhighlight: function (element, errorClass, validClass) {
+			//	$(element).parents(".col-sm-5").addClass("has-success").removeClass("has-error");
+			//	$(element).next("span").addClass("glyphicon-ok").removeClass("glyphicon-remove");
+			//}
+
+		});
+	});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,187 @@
+﻿@using yuriPortal.Web.Helper
+@model yuriPortal.Data.Models.Board
+
+<script type="text/javascript">
+
+	$(document).ready(function () {
+
+		$("#btnSave").click(function () {
+
+			//$('#mySpinner').addClass('spinner');
+			
+			var pageType = $("#hidPageType").val()
+
+			var boardId = $("#hidBoardId").val();
+			var boardName = $("#txtBoardName").val();
+			var baordDesc = $("#txtDescription").val();
+
+			var isAttach = "0";
+			if ($('#chkAttach').val() == "on")
+				isAttach = "1";
+
+			var isComment = "0";
+			if ($('#chkComment').val() == "on")
+				isComment = "1";
+
+			var isLike = "0";
+			if ($('#chkLike').val() == "on")
+				isLike = "1";
+
+			var defaultUi = $("#ddlDefaultUi option:selected").val();
+			var submitData = {};
+			var sendUrl = "";
+
+			if (pageType.toUpperCase() == "TRUE") {
+				submitData = { "Board_id": boardId, "Board_name": boardName, "Description": baordDesc, "IsAttach": isAttach, "IsComment": isComment, "IsLike": isLike, "DefaultUI": defaultUi };
+				sendUrl = "/Board/UpdateBoard"
+			}
+			else
+			{
+				submitData = { "Board_name": boardName, "Description": baordDesc, "IsAttach": isAttach, "IsComment": isComment, "IsLike": isLike, "DefaultUI": defaultUi };
+				sendUrl = "/Board/SaveBoard"
+			}
+
+            $.ajax({
+                url: sendUrl,
+                type: 'POST',
+				data: JSON.stringify(submitData),
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function (result) {
+                        //$('#dvLoader').hide();
+
+						if (result.success) {
+							$("#btnClose").click();
+							BindDataList(1, 15);
+						}
+						else {
+							alert(result);
+						}
+                    }
+                });
+
+		});
+
+
+	});
+
+</script>
+<div id="custom-content" class="modal-block modal-block-md">
+	<section class="panel">
+		<header class="panel-heading">
+			<div class="panel-actions">
+				<a href="#" class="fa fa-times modal-dismiss" data-dismiss="modal"></a>
+			</div>
+
+			<h2 class="panel-title">Create Board</h2>
+		</header>
+		<div class="panel-body" id="mySpinner">
+			<form class="form-horizontal form-bordered" method="post">
+				@Html.HiddenFor(model => model.Board_id, new { @id = "hidBoardId" })
+				<input type="hidden" value="@Html.Raw(ViewBag.UpdateBoard)" id="hidPageType" />
+
+				<div class="form-group">
+					<label class="col-md-3 control-label" for="txtBoardName">Board Name</label>
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.Board_name, new { htmlAttributes = new { @class = "form-control", @id = "txtBoardName" } })
+						@Html.ValidationMessageFor(model => model.Board_name, "", new { @class = "text-danger" })
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-md-3 control-label" for="txtDescription">Description</label>
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control", @id = "txtDescription" } })
+						@Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-md-3 control-label" for="chkAttach">Attachment File</label>
+					<div class="col-md-9">
+						@*@Html.RadioButtonFor(model => model.IsAttach, new { htmlAttributes = new { @class = "form-control" } })*@
+						<div class="switch switch-primary">
+							@if (ViewBag.UpdateBoard == true)
+							{
+								<input type="checkbox" name="switch" data-plugin-ios-switch @(Model.IsAttach == 1 ? "checked='checked'" : string.Empty) id="chkAttach" />
+							}
+							else
+							{
+
+								<input type="checkbox" name="switch" data-plugin-ios-switch id="chkAttach" />
+							}
+						</div>
+
+					</div>
+
+				</div>
+
+
+				<div class="form-group">
+					<label class="col-md-3 control-label" for="chkComment">Comment</label>
+					<div class="col-md-9">
+						@*@Html.EditorFor(model => model.IsComment, new { htmlAttributes = new { @class = "form-control" } })*@
+						<div class="switch switch-primary">
+							@if (ViewBag.UpdateBoard == true)
+							{
+								<input type="checkbox" name="switch" data-plugin-ios-switch @(Model.IsComment == 1 ? "checked='checked'" : string.Empty) id="chkComment" />
+							}
+							else
+							{
+								<input type="checkbox" name="switch" data-plugin-ios-switch id="chkComment" />
+							}
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-md-3 control-label" for="chkLike">Like</label>
+					<div class="col-md-9">
+						@*@Html.EditorFor(model => model.IsLike, new { htmlAttributes = new { @class = "form-control" } })*@
+						<div class="switch switch-primary">
+
+							@if (ViewBag.UpdateBoard == true)
+							{
+								<input type="checkbox" name="switch" data-plugin-ios-switch @(Model.IsLike == 1 ? "checked='checked'" : string.Empty) id="chkLike" />
+							}
+							else
+							{
+								<input type="checkbox" name="switch" data-plugin-ios-switch id="chkLike" />
+							}
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-md-3 control-label" for="ddlDefaultUi">Default UI</label>
+					<div class="col-md-9">
+						@if (ViewBag.UpdateBoard == true)
+						{
+							@Html.DropDownList("uilist", CodeManager.getCodeListByGroup("BOARD_TYPE", @Html.Raw(Model.DefaultUI).ToString()), null, new { @class = "form-control populate", @id = "ddlDefaultUi" })
+						}
+						else
+						{
+							@Html.DropDownList("uilist", CodeManager.getCodeListByGroup("BOARD_TYPE"), null, new { @class = "form-control populate", @id = "ddlDefaultUi" })
+						}
+
+					</div>
+				</div>
+			</form>
+		</div>
+
+		<footer class="panel-footer">
+			<div class="row">
+				<div class="col-md-12 text-right">
+					<button type="button" class="btn btn-default modal-dismiss" id="btnClose">Close</button>
+					<button type="button" class="btn btn-primary" id="btnSave">Save changes</button>
+				</div>
+			</div>
+		</footer>
+	</section>
+
+</div>
+
+
+
+
+

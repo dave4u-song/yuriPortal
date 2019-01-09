@@ -1,0 +1,60 @@
+﻿@model yuriPortal.Data.Models.CommCode
+
+<script type='text/javascript'>
+
+	function codeSaveFunc() {
+
+		alert(1);
+	}
+</script>
+
+	<div class="row">
+		<div class="col-lg-12">
+
+			<section class="panel">
+				<header class="panel-heading">
+					<div class="panel-actions">
+						<a href="#" class="fa fa-caret-down"></a>
+						<a href="#" class="fa fa-times"></a>
+					</div>
+
+					<h2 class="panel-title">Code Create</h2>
+				</header>
+				<div class="panel-body">
+					<form class="form-horizontal form-bordered" method="get">
+						@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+						<div class="form-group">
+							<label class="col-md-3 control-label" for="inputDefault">Code Name</label>
+							<div class="col-md-6">
+								@Html.EditorFor(model => model.Code_Name, new { htmlAttributes = new { @class = "form-control" } })
+								@Html.ValidationMessageFor(model => model.Code_ID, "", new { @class = "text-danger" })
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-md-3 control-label" for="inputDisabled">Description</label>
+							<div class="col-md-6">
+								@Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
+								@Html.ValidationMessageFor(model => model.Code_ID, "", new { @class = "text-danger" })
+							</div>
+						</div>
+					</form>
+				</div>
+			</section>
+
+		</div>
+	</div>
+
+
+	<div class="form-horizontal">
+		<div class="form-group">
+			<div class="col-md-offset-2 col-md-10">
+				<button type="button" class="mb-xs mt-xs mr-xs btn btn-primary" onclick="codeSaveFunc();">Primary</button>
+			</div>
+		</div>
+	</div>
+
+
+<div>
+	@Html.ActionLink("Back to List", "Index")
+</div>

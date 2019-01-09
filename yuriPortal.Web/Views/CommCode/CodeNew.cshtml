@@ -1,0 +1,134 @@
+﻿@using Microsoft.AspNet.Identity;
+@model yuriPortal.Data.Models.CommCode
+
+<script type="text/javascript">
+	function CheckRequiredFields() {
+		var isValid = true;
+		$('.required').each(function () {
+			if ($.trim($(this).val()) == '') {
+				isValid = false;
+				$(this).addClass('red_border');
+
+
+			}
+			else {
+				$(this).removeClass('red_border');
+
+			}
+		});
+		return isValid;
+	}  
+
+	$(document).ready(function () {
+
+		$("#btnSave").click(function () {
+
+			$('#mySpinner').addClass('spinner');
+			var CodeGroupID = $("#CodeGroupID").val();
+			var codeId		= $("#txtCodeId").val();
+			var codeName	= $("#txtCodeName").val();
+			var codeValue	= $("#txtCodeValue").val();
+			var codeDesc	= $("#txtDesc").val();
+
+                $.ajax({
+                    url: '@Url.Action("SaveCode", "CommCode")',
+                        type: 'POST',
+						data: JSON.stringify({ "CodeGroupID": CodeGroupID, "Code_ID": codeId, "Code_Name": codeName, "Code_Value": codeValue, "Description": codeDesc }),
+                        dataType: "json",
+                        contentType: "application/json; charset=utf-8",
+					success: function (result) {
+						$('#mySpinner').removeClass('spinner');
+
+						if (result.success) {
+							
+							$("#btnClose").click();
+							afterSave();
+						}
+						else {
+							alert(result.SaveError);
+						}
+					},
+					error: function (result) {
+						alert("Wrong == " + result);
+					}
+                    });
+
+
+		});
+
+
+	});
+
+</script>
+
+
+<div id="custom-content" class="modal-block modal-block-md">
+
+	<section class="panel" id="mySpinner">
+		<header class="panel-heading">
+			<div class="panel-actions">
+				<a href="#" class="fa fa-times modal-dismiss" data-dismiss="modal"></a>
+			</div>
+			<h2 class="panel-title">Code Create</h2>
+		</header>
+		<div class="panel-body">
+			<form class="form-horizontal form-bordered" method="post">
+				@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+				@Html.Hidden("CodeGroupID", @ViewBag.CodeGroupid as string)
+				<div class="form-group">
+					<label class="col-md-3 control-label" for="inputDefault">Code Group</label>
+					<div class="col-md-9 bottom">
+						<div>@ViewBag.CodeGroupid</div>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-md-3 control-label" for="inputDefault">Code ID</label>
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.Code_ID, new { htmlAttributes = new { @class = "form-control", @id = "txtCodeId" } })
+						@Html.ValidationMessageFor(model => model.Code_ID, "", new { @class = "text-danger" })
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-md-3 control-label" for="inputDefault">Code Name</label>
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.Code_Name, new { htmlAttributes = new { @class = "form-control", @id = "txtCodeName" } })
+						@Html.ValidationMessageFor(model => model.Code_Name, "", new { @class = "text-danger" })
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-md-3 control-label" for="inputDefault">Code Value</label>
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.Code_Value, new { htmlAttributes = new { @class = "form-control", @id = "txtCodeValue" } })
+						@Html.ValidationMessageFor(model => model.Code_Value, "", new { @class = "text-danger" })
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-md-3 control-label" for="inputDisabled">Description</label>
+					<div class="col-md-9">
+						@Html.TextAreaFor(model => model.Description, new { @class = "form-control", id = "txtDesc", row = 3 })
+						@Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger", id = "txtClose" })
+					</div>
+				</div>
+			</form>
+		</div>
+
+		<footer class="panel-footer">
+			<div class="row">
+				<div class="col-md-12 text-right">
+					<button type="button" class="btn btn-default modal-dismiss" data-dismiss="modal" id="btnClose">Close</button>
+					<button type="button" class="btn btn-primary" id="btnSave">Save changes</button>
+				</div>
+			</div>
+		</footer>
+	</section>
+
+</div>
+
+
+
+
+

@@ -1,0 +1,79 @@
+﻿
+<!DOCTYPE html>
+<html class="boxed">
+<head>
+	<meta charset="UTF-8">
+	<title>@ViewBag.Title - Yuri Portal</title>
+	<meta name="keywords" content="Yuri Portal" />
+	<meta name="description" content="Yuri Contents Management System">
+	<meta name="author" content="Dave Song">
+
+	<!-- Mobile Metas -->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+	<!-- Web Fonts  -->
+	<link href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800|Shadows+Into+Light" rel="stylesheet" type="text/css">
+
+	
+	@Styles.Render("~/Css/theme")
+	@Scripts.Render("~/bundles/modernizr/ver1")
+
+	@Scripts.Render("~/Script/theme")
+	@RenderSection("scripts", required: false)
+
+</head>
+<body>
+
+	<section class="body">
+
+		<!-- start: header -->
+		<header class="header">
+			<div class="logo-container">
+				<a href="../" class="logo">
+					<img src="/Images/logo3.png" height="35" alt="Porto Admin" />
+				</a>
+
+			</div>
+
+			<!-- start: search & user box -->
+			@*@Html.Partial("_Menu")*@
+			@{ Html.RenderAction("GetMenuList", "Home"); }
+			@Html.Partial("_LoginPartial")
+
+			<!-- end: search & user box -->
+		</header>
+		<!-- end: header -->
+
+		<div class="inner-wrapper">
+
+
+			<section role="main" class="content-body">
+				<header class="page-header">
+					<h2>Boxed Layout</h2>
+
+					<div class="right-wrapper pull-right">
+						<ol class="breadcrumbs">
+							<li>
+								<a href="index.html">
+									<i class="fa fa-home"></i>
+								</a>
+							</li>
+							<li><span>Layouts</span></li>
+							<li><span>Boxed&nbsp;&nbsp;</span></li>
+						</ol>
+					</div>
+
+				</header>
+
+				<!-- start: page -->
+
+				@RenderBody()
+
+				<!-- end: page -->
+			</section>
+		</div>
+		@*<i class="fa fa-spinner fa-spin fa-3x fa-fw margin-bottom"></i>*@
+	</section>
+
+</body>
+</html>

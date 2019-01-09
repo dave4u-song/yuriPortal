@@ -1,0 +1,254 @@
+﻿@{
+	Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@model IEnumerable<yuriPortal.Data.Models.Board>
+
+<section class="panel">
+	<div class="form-group">
+		<div class="row">
+			<div class="col-md-8">
+				<button type="button" class="btn btn-primary" onclick="AddBoard();">Create Board</button>
+			</div>
+			<div class="col-md-4 text-md-right">
+				<div class="input-group">
+					<input type="text" class="form-control" id="txtSearch">
+					<span class="input-group-btn">
+						<button class="btn btn-primary" type="button" id="btnSearch">Search</button>
+					</span>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<div class="panel-body">
+		<div class="table-responsive" id="divList">
+			<table class="table table-bordered table-striped table-condensed mb-none">
+				<thead>
+					<tr>
+						<th class="text-center">Board Id</th>
+						<th class="text-center">Board Name</th>
+						<th class="text-center">Description</th>
+						<th class="text-center">Attach</th>
+						<th class="text-center">Commet</th>
+						<th class="text-center">Like</th>
+						<th class="text-center">Status</th>
+						<th class="text-center">Defalut UI</th>
+						<th class="text-center">Create Date</th>
+						<th class="text-center">Create User</th>
+					</tr>
+				</thead>
+
+				<tbody id="ContentList"></tbody>
+
+			</table>
+
+		</div>
+
+
+	</div>
+
+
+	<div id="pagingArea">
+
+	</div>
+
+</section>
+
+
+
+<script type="text/javascript">
+
+	function AddBoard(boardId) {
+
+		var url = "";
+		if (boardId === undefined)
+			url = "/Board/CreateBoard";
+		else
+			url = "/Board/ViewContent/?boardId=" + boardId;
+
+
+		$.magnificPopup.open(
+			{
+				type: 'ajax',
+				closeOnBgClick: false,
+				closeBtnInside: false,
+				enableEscapeKey: true,
+				mainClass: 'mfp-fade',
+				items: {
+					src: url
+				},
+				callbacks: {
+					open: function () {
+						$.magnificPopup.instance.close = function () {
+							$.magnificPopup.proto.close.call(this);
+						}
+					},
+					ajaxContentAdded: function () {
+						var m = this;
+						this.content.find('.modal-dismiss').on('click', function (e) {
+							e.preventDefault();
+							m.close();
+						});
+					}
+				},
+			});
+	}
+
+	function afterSave() {
+		BindDataList(1, 15);
+	}
+
+	function contentView() {
+		alert(1);
+	}
+
+	$(document).ready(function () {
+
+		BindDataList(1, 15);
+
+		$("#btnSearch").click(function () {
+			alert("Search board.")
+		});
+	});
+
+	function activeRow(obj) {
+		//var rowId = $(this).attr("data-id");
+		var rowId = $(obj).attr("data-id");;
+		var $row = $("#" + rowId);
+
+		$row.removeClass("warning");
+
+	}
+
+	function ToJavaScriptDate(value) {
+		var pattern = /Date\(([^)]+)\)/;
+		var results = pattern.exec(value);
+		var dt = new Date(parseFloat(results[1]));
+
+		return (dt.getMonth() + 1) + "/" + dt.getDate() + "/" + dt.getFullYear();
+	}
+
+	function BindDataList(pageNum, pageSize) {
+		//After every trigger remove previous data and paging
+		$("#ContentList").empty();
+		$("#pagingArea").empty();
+
+		var searchValue = $("#txtSearch").val();
+
+		$.getJSON("/Board/GetBoardList", { pageNumber: pageNum, pageSize: pageSize, seachTest: searchValue }, function (response) {
+
+			var rowData = "";
+
+			for (var i = 0; i < response.Data.length; i++) {
+
+				var buttonType = "";
+				var deleteText = "";
+				if (response.Data[i].IsDelete) {
+					rowData = rowData + '<tr class="warning" id="row' + i.toString() + '">';
+					buttonType = '<button type="button" class="btn btn-xs btn-primary" onclick="changeRowStauts(this);" data-id="' + i.toString() + '" >Active</button>';
+					deleteText = "Deleted";
+				}
+				else {
+					rowData = rowData + '<tr id="row' + i.toString() + '">';
+					buttonType = '<button type="button" class="btn btn-xs btn-danger" onclick="changeRowStauts(this);" data-id="' + i.toString() + '" >Delete</button>';
+					deleteText = "Active";
+				}
+				rowData = rowData + '<td>' + response.Data[i].Board_id + '<input type="hidden" value="' + response.Data[i].Board_id + '" id="board_' + i.toString() + '"></td>';
+				rowData = rowData + '<td><a href="#" onclick="AddBoard(\'' + response.Data[i].Board_id + '\');">' + response.Data[i].Board_name + '</a></td>';
+				rowData = rowData + '<td>' + response.Data[i].Description + '</td>';
+				rowData = rowData + '<td>' + GetIsValue(response.Data[i].IsAttach) + '</td>';
+				rowData = rowData + '<td>' + GetIsValue(response.Data[i].IsComment) + '</td>';
+				rowData = rowData + '<td>' + GetIsValue(response.Data[i].IsLike) + '</td>';
+				rowData = rowData + '<td id="td' + i.toString() + '">' + deleteText + '</td>';
+				rowData = rowData + '<td>' + ToJavaScriptDate(response.Data[i].CreateDt) + '</td>';
+				rowData = rowData + '<td>' + response.Data[i].UserName + '</td>';
+				rowData = rowData + '<td>' + response.Data[i].DefaultUI + '</td>';
+				rowData = rowData + '</tr>';
+			}
+
+			$("#ContentList").append(rowData);
+			PaggingTemplate(response.TotalPages, response.CurrentPage, response.PageSize);
+		});
+	}
+
+	function GetIsValue(val) {
+
+		var strText = "False";
+
+		if (val == "1")
+			strText = "True";
+
+		return strText;
+	}
+
+	function getListNum(current, { range, pages, start = 1 }) {
+		const paging = [];
+		var i = Math.min(pages + start - range, Math.max(start, current - (range / 2 | 0)));
+		const end = i + range;
+
+		while (i < end) {
+			paging.push(i++)
+		}
+
+		return paging;
+	}
+
+
+	function PaggingTemplate(totalPage, currentPage, pagesize) {
+		var template = "";
+		var TotalPages = totalPage;
+		var CurrentPage = currentPage;
+		var PageNumberArray = [];
+
+		var pageCount = (TotalPages / pagesize) + (TotalPages % pagesize != 0) ? 1 : 0 ;
+		const pageNums = { range: pageCount, pages: TotalPages };
+
+		PageNumberArray = getListNum(currentPage, pageNums);
+
+
+		console.log(PageNumberArray);
+
+		var FirstPage = 1;
+		var LastPage = totalPage;
+		if (totalPage != currentPage) {
+			var ForwardOne = currentPage + 1;
+		}
+		var BackwardOne = 1;
+		if (currentPage > 1) {
+			BackwardOne = currentPage - 1;
+		}
+
+		template = template + '<ul class="pagination">';
+
+		if (currentPage == 1) {
+			template = template + '<li class="first disabled"><a href="#"><i class="fa fa-angle-double-left"></i></a></li>' +
+				'<li class="prev disabled"><a href="#"><i class="fa fa-angle-left"></i></a></li>';
+		}
+		else {
+			template = template + '<li class="first"><a href="#" onclick="GetPageData(' + FirstPage + ')"><i class="fa fa-angle-double-left"></i></a></li>' +
+				'<li class="prev"><a href="#" onclick="GetPageData(' + BackwardOne + ')"><i class="fa fa-angle-left"></i></a></li>';
+		}
+
+		for (var i = 0; i < PageNumberArray.length; i++) {
+
+			if (CurrentPage == PageNumberArray[i])
+				template = template + '<li class="active"><a href = "#">' + PageNumberArray[i] + '</a></li>';
+			else
+				template = template + '<li><a onclick="GetPageData(' + PageNumberArray[i] + ')" href="#">' + PageNumberArray[i] + '</a></li>';
+		}
+
+		if (currentPage >= TotalPages) {
+			template = template + '<li class="next disabled"><a href="#"><i class="fa fa-angle-right"></i></a></li>';
+			template = template + '<li class="last disabled"><a href="#"><i class="fa fa-angle-double-right"></i></a></li></ul>';
+		}
+		else {
+			template = template + '<li class="next"><a href="#" onclick="GetPageData(' + ForwardOne + ')"><i class="fa fa-angle-right"></i></a></li>';
+			template = template + '<li class="last"><a href="#" onclick="GetPageData(' + LastPage + ')"><i class="fa fa-angle-double-right"></i></a></li></ul>';
+		}
+
+		$("#pagingArea").append(template);
+
+	}
+</script>

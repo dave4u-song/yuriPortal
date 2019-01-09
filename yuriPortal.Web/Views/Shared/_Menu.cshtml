@@ -1,0 +1,64 @@
+﻿@using yuriPortal.Data.Models;
+
+@model IEnumerable<yuriPortal.Data.Models.Menu>
+<div class="header-dark">
+	<div class="col-lg-6 col-md-1 col-sm-1 col-xs-12">
+		<div class="header-top-menu tabl-d-n">
+			<ul class="nav navbar-nav mai-top-nav">
+				@*@{foreach (var item in Model)
+			{
+				<li>
+					<a href="#">
+						@item.MenuName
+					</a>
+				</li>
+			}
+		}*@
+				<li>@Html.ActionLink("Home", "Index", "Home")</li>
+				<li>@Html.ActionLink("About me", "About", "Home")</li>
+				<li>@Html.ActionLink("Forum", "Index", "Board")</li>
+				<li>@Html.ActionLink("Survey", "Index", "Survey")</li>, 
+				<li class="nav-item dropdown">
+					<a href="#" data-toggle="dropdown" role="button" aria-expanded="false" class="nav-link dropdown-toggle">Admin <span class="angle-down-topmenu"><i class="fa fa-angle-down"></i></span></a>
+					<div role="menu" class="dropdown-menu animated flipInX">
+						@Html.ActionLink("User", "Index", "User")
+						@Html.ActionLink("Board", "Index", "Board")
+						@Html.ActionLink("Survey", "Index", "Survey")
+						@Html.ActionLink("Menu and Apps", "Index", "MenuRole")
+						@Html.ActionLink("Code", "Index", "CommCode")
+						@Html.ActionLink("Lang", "Index", "Language")
+					</div>
+				</li>
+			</ul>
+		</div>
+	</div>
+
+</div>
+
+
+@*<div class="header-dark">
+		<div class="col-lg-6 col-md-1 col-sm-1 col-xs-12">
+			<div class="header-top-menu tabl-d-n">
+				<ul class="nav navbar-nav mai-top-nav">
+					<li>@Html.ActionLink("Home", "Index", "Home")</li>
+					<li>@Html.ActionLink("About", "About", "Home")</li>
+					<li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+					<li class="nav-item dropdown">
+						<a href="#" data-toggle="dropdown" role="button" aria-expanded="false" class="nav-link dropdown-toggle">RolesAdmin <span class="angle-down-topmenu"><i class="fa fa-angle-down"></i></span></a>
+						<div role="menu" class="dropdown-menu animated flipInX">
+							<a href="#" class="dropdown-item">Company Info</a>
+							<a href="#" class="dropdown-item">Documentation</a>
+							<a href="#" class="dropdown-item">Expert Backend</a>
+							<a href="#" class="dropdown-item">Expert FrontEnd</a>
+							<a href="#" class="dropdown-item">Contact Support</a>
+						</div>
+					</li>
+					<li>@Html.ActionLink("UsersAdmin", "Index", "UsersAdmin")</li>
+				</ul>
+			</div>
+		</div>
+
+	</div>*@
+
+
+

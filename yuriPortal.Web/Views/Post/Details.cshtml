@@ -1,0 +1,363 @@
+﻿@{
+	Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+@model yuriPortal.Data.Models.BoardPost
+
+<script>
+
+	$(document).ready(function () {
+
+		var dispalyList = @Html.Raw(Json.Encode(this.ViewBag.CommentList));
+
+		//console.log(dispalyList);
+		ViewCommentList(dispalyList);
+
+		$('#selectLike').click(function () {
+			var _self = this;
+
+			if ($(_self).hasClass('text-primary'))
+				$(_self).removeClass('text-primary');
+			else
+				$(_self).addClass('text-primary');
+
+			if ($('#selecdisLike').hasClass('text-primary'))
+				$('#selecdisLike').removeClass('text-primary');
+		});
+
+		$('#selecdisLike').click(function () {
+			var _self = this;
+
+			if ($(_self).hasClass('text-primary'))
+				$(_self).removeClass('text-primary');
+			else
+				$(_self).addClass('text-primary');
+
+			if ($('#selectLike').hasClass('text-primary'))
+				$('#selectLike').removeClass('text-primary');
+		});
+
+		//$("a[name='comments']").click(function (event) {
+		$('body').on('click', 'a[name="comments"]', function () {
+			var _self = this;
+			var commetSection = $(_self).parents('.row');
+
+			var CommentLevel = $(commetSection).find("input[name='commentLevel']").val()
+			var commentId = $(commetSection).find("input[name='currComment']").val()
+
+			findParent(event.target, (parseInt(CommentLevel) + 1), commentId);
+		});
+
+
+		//$("a[name='saveComment']").click(function (event) {
+		$('body').on('click', 'a[name="saveComment"]', function () {
+			var _self = this;
+			
+			$(_self).addClass("disabled");
+			var commetSection = $(_self).parents('.simple-compose-box');
+			var txtArea = $(commetSection).find("textarea[name='txtaComment']");
+
+			var ContendVal = $(txtArea).val();
+			var PostId = $("#hidPostId").val();
+			var CommentLevel = $(commetSection).find("input[name='commentLevel']").val()
+			var parentComment = $(commetSection).find("input[name='parentComment']").val()
+
+			//console.log(ContendVal);
+			//console.log(PostId);
+			//console.log(CommentLevel);
+			//console.log(parentComment);
+
+			$.ajax({
+				url: '@Url.Action("SaveComment", "Post")',
+				type: 'POST',
+				data: JSON.stringify({ "PostId": PostId, "ParentId": parentComment, "CommentLevel": CommentLevel, "CommentContent": ContendVal }),
+				dataType: "json",
+				contentType: "application/json; charset=utf-8",
+				success: function (result) {
+					//$('#mySpinner').removeClass('spinner');
+					var Commentid		= result.CommetId;
+					var CommentLevel	= result.CommentLevel;
+					var ParentId		= result.ParentId;
+					var CommmentContent = result.CommentContent;
+					var userPic			= result.UserPic;
+					var UserFullName	= result.FullName;
+					var CreateDt		= result.CreateDt;
+					var AddType			= "SAVED";
+
+					AddCommentResult(Commentid, CommentLevel, ParentId, CommmentContent, userPic, UserFullName, CreateDt, commetSection, AddType);
+
+					if (parseInt(CommentLevel) > 1)
+						RemoveMe(commetSection);
+
+					$(_self).removeClass("disabled");
+				},
+				error: function (result) {
+					alert("Wrong == " + result);
+				}
+			});
+
+		});
+
+
+
+
+	});
+
+	function ViewCommentList(dispalyList) {
+
+		for (var i = 0; i < dispalyList.length; i++) {
+
+			var Commentid		= dispalyList[i].CommetId;
+			var CommentLevel	= dispalyList[i].CommentLevel;
+			var ParentId		= dispalyList[i].ParentId;
+			var CommmentContent = dispalyList[i].CommentContent;
+			var userPic			= dispalyList[i].UserPic;
+			var UserFullName	= dispalyList[i].FullName;
+			var CreateDt		= dispalyList[i].CreateDt;
+			var AddType			= "LIST";
+
+			AddCommentResult(Commentid, CommentLevel, ParentId, CommmentContent, userPic, UserFullName, CreateDt, null, AddType);
+
+		}
+	}
+
+	function AddCommentResult(CommentId, CommentLevel, ParenId, ContendVal, ProfilePic, FullName, CreateDt, node, AddType) {
+		var commentHtml = "";
+		var className = "";
+		var sibleControl;
+		//var _self = this;
+
+		var parentNode = $(node).parents('.panel-default');
+
+		if (AddType == "LIST") {
+
+			var objRow = $('#divList div.row:last');
+
+			if (parseInt(CommentLevel) > 1) {
+				className = "user-comment admin-comment";
+			}
+			else {
+				className = "user-comment";
+			}
+	
+			sibleControl = $(objRow);
+		}
+		else {
+			if (parseInt(CommentLevel) > 1) {
+				className = "user-comment admin-comment";
+				sibleControl = $(parentNode);
+			} else {
+				className = "user-comment";
+				sibleControl = $('#divCommentTitle');
+			}
+		}
+
+
+		console.log("CommentLevel === " + CommentLevel);
+
+		commentHtml = commentHtml + "<div class=\"row\">";
+		commentHtml = commentHtml + "	<input type=\"hidden\" name=\"commentLevel\" value=\"" + CommentLevel + "\" /><input type=\"hidden\" name=\"currComment\" value=\"" + CommentId + "\" />";
+		commentHtml = commentHtml + "	<div class=\"col-lg-12 col-md-12 col-sm-12 col-xs-12\">";
+		commentHtml = commentHtml + "		<div class=\"" + className + "\">";
+		commentHtml = commentHtml + "			<img src=\"/Files/Userpic/" + ProfilePic + "\" class=\"avatar--tiny\" alt=\"\" />";
+		commentHtml = commentHtml + "			<div class=\"comment-details\">";
+		commentHtml = commentHtml + "				<h4>" + FullName + " " + ToJavaScriptDate(CreateDt) + " <span class=\"comment-replay\"><a href=\"#//\" class=\"danger\" id=\"btnComment\" name=\"comments\">Reply</a></span></h4>";
+		commentHtml = commentHtml + "				<p>" + ContendVal + "</p>";
+		commentHtml = commentHtml + "			</div>";
+		commentHtml = commentHtml + "		</div>";
+		commentHtml = commentHtml + "	</div>";
+		commentHtml = commentHtml + "</div>";
+
+		console.log("----------------------------------------");
+		console.log(parseInt(CommentLevel));
+
+		if (AddType == "LIST") {
+			$(commentHtml).insertAfter(sibleControl)
+				.hide()
+				.fadeIn(500);
+		}
+		else {
+			if (parseInt(CommentLevel) > 1) {
+				console.log(sibleControl);
+				$(commentHtml).insertAfter(sibleControl)
+					.hide()
+					.fadeIn(500);
+			}
+			else {
+				if ($(sibleControl).attr('class') == "row") {
+					console.log("+++++++++++++++++++++");
+					$(commentHtml).insertAfter(sibleControl)
+						.hide()
+						.fadeIn(500);
+				}
+			}
+		}
+	}
+
+	function ToJavaScriptDate(value) {
+
+		value = String(value).replace("/", "");
+		var pattern = /Date\(([^)]+)\)/;
+		var results = pattern.exec(value);
+
+		var dt = new Date(parseFloat(results[1]));
+
+		var amOrPm = (dt.getHours() < 12) ? "AM" : "PM";
+		var hour = (dt.getHours() < 12) ? dt.getHours() : dt.getHours() - 12;
+
+		return (dt.getMonth() + 1) + "/" + dt.getDate() + "/" + dt.getFullYear() + " " + hour + ":" + dt.getMinutes() + " " + amOrPm;
+	}
+
+
+	function RemoveMe(node) {
+		var commetPanel = $(node).parents('.panel-default');
+
+		$(commetPanel).remove().fadeOut(500);
+	}
+
+	function findParent(node, commentLevel, commentId) {
+
+		var parentNode = $(node).parents('.row');
+		var commentHtml = "";
+
+		console.log(commentLevel);
+
+		commentHtml = commentHtml + "<div class=\"panel-default admin-comment\">\n";
+		commentHtml = commentHtml + "	<section class=\"simple-compose-box\">\n";
+		commentHtml = commentHtml + "		<input type=\"hidden\" name=\"commentLevel\" value=\"" + commentLevel + "\" /><input type=\"hidden\" name=\"parentComment\" value=\"" + commentId + "\" />";
+		commentHtml = commentHtml + "		<textarea name=\"txtaComment\" data-plugin-textarea-autosize rows=\"1\"></textarea>\n";
+		commentHtml = commentHtml + "		<div class=\"compose-box-footer\">\n";
+		commentHtml = commentHtml + "			<ul class=\"compose-btn list-inline\">\n";
+		commentHtml = commentHtml + "				<li>\n";
+		commentHtml = commentHtml + "					<a class=\"btn btn-primary btn-xs\" name=\"cancels\" onclick=\"RemoveMe(this);\">cancel</a>\n";
+		commentHtml = commentHtml + "				</li>\n";
+		commentHtml = commentHtml + "				<li>\n";
+		commentHtml = commentHtml + "					<a class=\"btn btn-primary btn-xs\" name=\"saveComment\">Comment</a>\n";
+		commentHtml = commentHtml + "				</li>\n";
+		commentHtml = commentHtml + "			</ul>\n";
+		commentHtml = commentHtml + "		</div>\n";
+		commentHtml = commentHtml + "	</section>\n";
+		commentHtml = commentHtml + "</div>\n";
+
+		var sibleControl = $(parentNode).next();
+		//alert($(sibleControl).attr("class"));
+
+		if ($(sibleControl).attr('class') == "row") {
+			$(commentHtml).insertAfter(parentNode)
+				.hide()
+				.fadeIn(500);
+		}
+		//else {
+		//	$(sibleControl).remove().fadeOut(500);
+		//}
+	}
+
+
+</script>
+<section class="panel">
+	<input type="hidden" id="hidPostId" value="@Html.Raw(Model.PostId)" />
+	<div class="panel" id="divList">
+		<div class="panel-heading">
+			<div class="panel-actions">
+				@*<a href="#" class="fa fa-thumbs-up text-primary" name="selectLike"></a><label>@Html.Raw(Model.LikeCount)</label>
+				<a href="#" class="fa fa-thumbs-down" name="selecdisLike"></a><label>5</label>*@
+
+				<ul class="list-inline">
+					<li class="fa fa-thumbs-up" style="cursor: pointer;" id="selectLike"></li>
+					<label>@Html.Raw(Model.LikeCount)</label>
+					<li class="fa fa-thumbs-down" style="cursor: pointer;" id="selecdisLike"></li>
+					<label>@Html.Raw(Model.LikeCount)</label>
+				</ul>
+
+
+			</div>
+
+			<p class="panel-title">
+				@Html.Raw(Model.PostSubject)
+			</p>
+		</div>
+		<div class="panel-body">
+			@Html.Raw(Model.PostContent)
+		</div>
+		<div class="panel-footer">
+			<div class="row show-grid">
+				<div class="col-md-6"><p class="m-none"><small>@Html.Raw(Model.CreateDt)@*July 07, 2014. 9:51pm*@</small></p></div>
+				<div class="col-md-6 text-right"><button class="btn btn-primary" onclick="location.href='@Url.Action("Create", "Post")'">Edit</button>&nbsp;&nbsp;<button class="btn btn-default" onclick="history.go(-1); return false;">List</button></div>
+			</div>
+		</div>
+		<hr class="dotted short">
+		<div id="divComment" class="panel-default">
+
+			<section class="simple-compose-box">
+				<input type="hidden" name="commentLevel" value="1" /><input type="hidden" name="parentComment" value="0" />
+				<textarea name="txtaComment" data-plugin-textarea-autosize rows="1"></textarea>
+				<div class="compose-box-footer">
+					<ul class="compose-btn list-inline">
+						<li>
+							<a class="btn btn-primary btn-xs" name="saveComment">Comment</a>
+						</li>
+					</ul>
+				</div>
+			</section>
+		</div>
+
+		<div id="divCommentTitle" class="row">
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+				<div class="comment-head">
+					<h3>Comments</h3>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+		</div>
+			@*<div class="row">
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+					<div class="user-comment">
+						<img src="/Files/Userpic/1.jpg" alt="" />
+						<div class="comment-details">
+							<h4>Jonathan Doe 2015 15 July <span class="comment-replay"><a href="#//" class="danger" id="btnComment" name="comments">Reply</a></span></h4>
+							<p>
+								Shabby chic selfies pickled Tumblr letterpress iPhone. Wolf vegan retro selvage literally Wes Anderson ethical four loko. Meggings blog chambray tofu pour-over. Pour-over Tumblr keffiyeh, cornhole whatever cardigan
+								Tonx lomo.Shabby.
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+					<div class="user-comment admin-comment">
+						<img src="/Files/Userpic/3.jpg" alt="" />
+						<div class="comment-details">
+							<h4>Dave Song - Dec 03 2018 <span class="comment-replay">Replay</span></h4>
+							<p>
+								Shabby chic selfies pickled Tumblr letterpress iPhone. Wolf vegan retro selvage literally Wes Anderson ethical four loko. Meggings blog chambray tofu pour-over. Pour-over Tumblr keffiyeh, cornhole whatever cardigan
+								Tonx lomo.Shabby.
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+					<div class="user-comment user-coment2">
+						<img src="/Files/Userpic/4.jpg" alt="" />
+						<div class="comment-details">
+							<h4>Nikki Sixx - Dec 04 2018 <span class="comment-replay">Replay</span></h4>
+							<p>
+								Shabby chic selfies pickled Tumblr letterpress iPhone. Wolf vegan retro selvage literally Wes Anderson ethical four loko. Meggings blog chambray tofu pour-over. Pour-over Tumblr keffiyeh, cornhole whatever cardigan
+								Tonx lomo.Shabby.
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>*@
+
+
+
+		</div>
+
+</section>
+
+
