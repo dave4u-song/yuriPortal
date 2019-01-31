@@ -33,7 +33,6 @@ namespace yuriPortal.Web
 			//Default Layout Css
 			bundles.Add(new StyleBundle("~/Css/theme").Include(
 							"~/Content/bootstrap/css/bootstrap.css",
-							"~/Content/font-awesome/css/font-awesome.css",
 							"~/Content/magnific-popup/magnific-popup.css",
 							"~/Content/bootstrap-datepicker/css/datepicker3.css",
 							"~/Css/theme.css",
@@ -42,6 +41,20 @@ namespace yuriPortal.Web
 
 			//Default Layout Javascript
 			bundles.Add(new StyleBundle("~/Script/theme").Include(
+							"~/Scripts/modernizr/modernizr.js",
+							"~/Scripts/jquery/jquery.js",
+							"~/Scripts/jquery-browser-mobile/jquery.browser.mobile.js",
+							"~/Content/bootstrap/js/bootstrap.js",
+							"~/Scripts/nanoscroller/nanoscroller.js",
+							"~/Content/bootstrap-datepicker/js/bootstrap-datepicker.js",
+							"~/Content/magnific-popup/magnific-popup.js",
+							"~/Scripts/jquery-placeholder/jquery.placeholder.js",
+							"~/javascripts/theme.js",
+							"~/javascripts/theme.custom.js",
+							"~/javascripts/theme.init.js"));
+
+			//Default Layout Javascript
+			bundles.Add(new StyleBundle("~/Script/asset").Include(
 							"~/Scripts/modernizr/modernizr.js",
 							"~/Scripts/jquery/jquery.js",
 							"~/Scripts/jquery-browser-mobile/jquery.browser.mobile.js",
