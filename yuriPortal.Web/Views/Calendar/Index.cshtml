@@ -1,0 +1,141 @@
+﻿@{
+	Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<script type="text/javascript">
+
+	$(document).ready(function () {
+
+		//var data2 = "/Customer/GetNoteListForCal/";
+
+		//var events = [];
+		//$.ajax({
+		//	type: "GET",
+		//	url: "/Customer/GetNoteListForCal/",
+		//	success: function (data) {
+				
+
+		//		console.log(data);
+		//	},
+		//	error: function (error) {
+		//		alert('failed');
+		//	}
+		//})
+		$('#calendar').fullCalendar({
+			header: {
+				left: 'prev,next today',
+				center: 'title',
+				right: 'month,agendaWeek,agendaDay'
+			},
+			navLinks: true, // can click day/week names to navigate views
+			editable: true,
+			eventLimit: true, // allow "more" link when too many events
+			eventClick: function (calEvent, jsEvent, view) {
+				alert(calEvent.title);
+			},
+			firstDay: 1,
+			businessHours: { start: '10:00', end: '22:00', dow: [1, 2, 3, 4, 5] },
+			defaultView: 'agendaDay',
+			axisFormat: 'HH:mm',
+			selectable: true,
+			selectHelper: true,
+
+			select: function (start, end, allDay) {
+				$(this).popover({ container: ".parent" });
+				$(this).popover('show');
+
+
+			},
+			eventDrop: function (event, dayDelta, minuteDelta) {
+				// message to end user
+				//alert(event.id + ' was moved ' + dayDelta + ' days\n' + '- database will be updated now');
+
+				/**
+				 * perform ajax call for db update
+				 */
+				jQuery.post(
+					'url'
+					, {
+						id: event.id
+						, start: event.start
+						, end: event.end
+					}
+				);
+			},
+			views: {
+				basic: {
+					// options apply to basicWeek and basicDay views
+				},
+				agenda: {
+					// options apply to agendaWeek and agendaDay views
+				},
+				week: {
+					columnFormat: 'ddd d/M'
+				},
+				day: {
+					// options apply to basicDay and agendaDay views
+				}
+			},
+			dayRender: function (date, cell) {
+				var today = new Date();
+				//var cellIndex = cell[0].cellIndex
+				//var h = cell.closest('table').find('th').eq(cellIndex);
+				//if (date.getDate() === today.getDate()) {
+				//	h.html('<span class="c1">' + moment(date).format("ddd") + '</span>&nbsp;<span class="c2">' + moment(date).format("M/D") + '</span>');
+				//} else {
+				//	h.addClass('c1');
+				//}
+			},
+			eventRender: function (event, element) {
+				console.log(event);
+				if (event.id == 100) {
+					event.startEditable = false;
+				}
+			},
+			//columnHeaderHtml: function (mom) {
+			//	if (mom.weekday() > 0) {
+			//		return '<font color="#ffffff">Friday</font>';
+			//	} else {
+			//		return mom.format('L');
+			//	}
+			//},
+			events: "/Customer/GetNoteListForCal/",
+			textColor: 'black' // an option!
+		});
+
+	});
+</script>
+
+<section class="panel">
+	<div class="panel-body">
+		<div class="row">
+			<div class="col-md-9">
+				<div id="calendar"></div>
+			</div>
+			<div class="col-md-3">
+				<p class="h4 text-light">Filter</p>
+				<hr />
+				<div id='chks'>
+					<div>
+						<div class="checkbox-custom chekbox-primary">
+							<input id="chkEvent" type="checkbox" />
+							<label for="chkEvent">Event</label>
+						</div>
+						<div class="checkbox-custom chekbox-primary">
+							<input id="chkNote" type="checkbox" />
+							<label for="chkNote">Note</label>
+						</div>
+						<div class="checkbox-custom chekbox-primary">
+							<input id="chkActivity" type="checkbox" />
+							<label for="chkActivity">Activity</label>
+						</div>
+						<div class="checkbox-custom chekbox-primary">
+							<input id="chkGoogle" type="checkbox" />
+							<label for="chkGoogle">Google Calendar</label>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>

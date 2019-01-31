@@ -49,6 +49,30 @@
       <HintPath>..\packages\Unity.5.8.13\lib\net46\CommonServiceLocator.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.ReportViewer.Common, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.WebForms.150.900.148\lib\net40\Microsoft.ReportViewer.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.DataVisualization, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.WebForms.150.900.148\lib\net40\Microsoft.ReportViewer.DataVisualization.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.Design, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.WebForms.150.900.148\lib\net40\Microsoft.ReportViewer.Design.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.ProcessingObjectModel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.WebForms.150.900.148\lib\net40\Microsoft.ReportViewer.ProcessingObjectModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.WebDesign, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.WebForms.150.900.148\lib\net40\Microsoft.ReportViewer.WebDesign.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.WebForms, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.WebForms.150.900.148\lib\net40\Microsoft.ReportViewer.WebForms.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.WinForms, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ReportingServices.ReportViewerControl.WebForms.150.900.148\lib\net40\Microsoft.ReportViewer.WinForms.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.Types, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.SqlServer.Types.14.0.314.76\lib\net40\Microsoft.SqlServer.Types.dll</HintPath>
+    </Reference>
     <Reference Include="PagedList, Version=1.17.0.0, Culture=neutral, PublicKeyToken=abbb863e9397c5e1, processorArchitecture=MSIL">
       <HintPath>..\packages\PagedList.1.17.0.0\lib\net40\PagedList.dll</HintPath>
     </Reference>
@@ -234,12 +258,17 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\BoardController.cs" />
+    <Compile Include="Controllers\CalendarController.cs" />
     <Compile Include="Controllers\CommCodeController.cs" />
+    <Compile Include="Controllers\CustomerController.cs" />
+    <Compile Include="Controllers\HireCodeController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LangController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\MenuController.cs" />
     <Compile Include="Controllers\PostController.cs" />
     <Compile Include="Controllers\RolesAdminController.cs" />
+    <Compile Include="Controllers\SurveyController.cs" />
     <Compile Include="Controllers\UserAdminController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Global.asax.cs">
@@ -252,6 +281,7 @@
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AdminViewModel.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="SqlServerTypes\Loader.cs" />
     <Compile Include="ViewModel\AccountViewModels.cs" />
     <Compile Include="ViewModel\AdminViewModel.cs" />
     <Compile Include="ViewModel\ManageViewModels.cs" />
@@ -760,6 +790,9 @@
     <Content Include="Content\Site.css" />
     <Content Include="Images\!happy-face.png" />
     <Content Include="Images\!sample-user.jpg" />
+    <Content Include="Images\default-logo.png" />
+    <Content Include="Images\Logo.jpg" />
+    <Content Include="Images\preloader1.png" />
     <Content Include="Images\apple-touch-icon-precomposed.png" />
     <Content Include="Images\arrows.png" />
     <Content Include="Images\blog-image-1.jpg" />
@@ -799,6 +832,7 @@
     <Content Include="Images\post-thumb-1.jpg" />
     <Content Include="Images\post-thumb-2.jpg" />
     <Content Include="Images\post-thumb-3.jpg" />
+    <Content Include="Images\preloader2.png" />
     <Content Include="Images\projects\project-1.jpg" />
     <Content Include="Images\projects\project-2.jpg" />
     <Content Include="Images\projects\project-3.jpg" />
@@ -808,6 +842,8 @@
     <Content Include="Images\projects\project-7.jpg" />
     <Content Include="Images\projects\project.jpg" />
     <Content Include="Images\Logo1.png" />
+    <Content Include="Images\sprites2.png" />
+    <Content Include="Images\sprites3.png" />
     <Content Include="Images\widget-twitter-profile.jpg" />
     <Content Include="javascripts\dashboard\examples.dashboard.js" />
     <Content Include="javascripts\forms\examples.advanced.form.js" />
@@ -1019,6 +1055,7 @@
     <Content Include="Content\jquery-ui\development-bundle\ui.spinner.jquery.json" />
     <Content Include="Content\jquery-ui\development-bundle\ui.widget.jquery.json" />
     <None Include="Properties\PublishProfiles\davesong - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\SmartMerchant - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\yuriportal - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\yuriportal - Web Deploy1.pubxml" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
@@ -1030,6 +1067,16 @@
     <Content Include="Scripts\dropzone\images\spritemap.png" />
     <Content Include="Scripts\drop\dropzone.css" />
     <Content Include="Scripts\drop\dropzone.js" />
+    <Content Include="Scripts\fullcalendar\fullcalendar.css" />
+    <Content Include="Scripts\fullcalendar\fullcalendar.js" />
+    <Content Include="Scripts\fullcalendar\fullcalendar.min.css" />
+    <Content Include="Scripts\fullcalendar\fullcalendar.min.js" />
+    <Content Include="Scripts\fullcalendar\fullcalendar.print.css" />
+    <Content Include="Scripts\fullcalendar\fullcalendar.print.min.css" />
+    <Content Include="Scripts\fullcalendar\gcal.js" />
+    <Content Include="Scripts\fullcalendar\gcal.min.js" />
+    <Content Include="Scripts\fullcalendar\lib\moment.min.js" />
+    <Content Include="Scripts\fullcalendar\locale-all.js" />
     <Content Include="Scripts\ios7-switch\ios7-switch.js" />
     <Content Include="Scripts\jquery-3.3.1.js" />
     <Content Include="Scripts\jquery-3.3.1.min.js" />
@@ -1039,6 +1086,7 @@
     <Content Include="Scripts\jquery-autosize\jquery.autosize.js" />
     <Content Include="Scripts\jquery-browser-mobile\jquery.browser.mobile.js" />
     <Content Include="Scripts\jquery-placeholder\jquery.placeholder.js" />
+    <Content Include="Scripts\jquery-preloader\jquery.preloaders.js" />
     <Content Include="Scripts\jquery-validation\additional-methods.js" />
     <Content Include="Scripts\jquery-validation\additional-methods.min.js" />
     <Content Include="Scripts\jquery-validation\jquery.validate.js" />
@@ -1049,6 +1097,12 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\jquery\jquery.js" />
     <Content Include="Scripts\jquery\jquery.min.js" />
+    <Content Include="Scripts\jstree\jstree.js" />
+    <Content Include="Scripts\jstree\themes\default\32px.png" />
+    <Content Include="Scripts\jstree\themes\default\40px.png" />
+    <Content Include="Scripts\jstree\themes\default\style.css" />
+    <Content Include="Scripts\jstree\themes\default\style.min.css" />
+    <Content Include="Scripts\jstree\themes\default\throbber.gif" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Scripts\modernizr\modernizr.js" />
     <Content Include="Scripts\nanoscroller\nanoscroller.css" />
@@ -1062,8 +1116,23 @@
     <Content Include="Scripts\summernote\summernote-bs3.css" />
     <Content Include="Scripts\summernote\summernote.css" />
     <Content Include="Scripts\summernote\summernote.js" />
+    <Content Include="SqlServerTypes\readme.htm" />
+    <Content Include="SqlServerTypes\x64\msvcr120.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SqlServerTypes\x64\SqlServerSpatial140.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SqlServerTypes\x86\msvcr120.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SqlServerTypes\x86\SqlServerSpatial140.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Views\Temp\index.html" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -1136,10 +1205,31 @@
     <Content Include="Views\Post\Details.cshtml" />
     <Content Include="Views\Lang\Index.cshtml" />
     <Content Include="Views\Lang\CreateLang.cshtml" />
+    <Content Include="Views\Survey\Index.cshtml" />
+    <Content Include="Views\Menu\Index.cshtml" />
+    <Content Include="Views\Menu\FindApps.cshtml" />
+    <Content Include="Views\Menu\AppsList.cshtml" />
+    <Content Include="Views\Menu\CreateApps.cshtml" />
+    <Content Include="Views\User\RoleList.cshtml" />
+    <Content Include="Views\Menu\ManageRoleMap.cshtml" />
+    <Content Include="Views\Shared\_AdminMenu.cshtml" />
+    <Content Include="Views\Customer\Index.cshtml" />
+    <Content Include="Views\Customer\CustomerDetail.cshtml" />
+    <Content Include="Views\Customer\CustomerCreate.cshtml" />
+    <Content Include="Views\Customer\CustomerReview.cshtml" />
+    <Content Include="Views\Calendar\Index.cshtml" />
+    <Content Include="Views\HireCode\Index.cshtml" />
+    <Content Include="Views\Customer\ManageDeal.cshtml" />
+    <Content Include="Views\Customer\ManageActivity.cshtml" />
+    <Content Include="Views\Customer\ManagePurchase.cshtml" />
+    <Content Include="Views\Customer\ManageInvoice.cshtml" />
+    <Content Include="Views\Customer\ManageEdit.cshtml" />
+    <Content Include="Views\Customer\CreateActivity.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="AttachFile\" />
+    <Folder Include="Files\Customerpic\" />
     <Folder Include="Resources\" />
   </ItemGroup>
   <ItemGroup>
@@ -1168,6 +1258,9 @@
       <Project>{4d1e40ca-0b2b-4aed-857c-6a2982bbd4fa}</Project>
       <Name>yuriPortal.Helper</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Report\Invoice.rdlc" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

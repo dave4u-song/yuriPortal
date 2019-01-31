@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using yuriPortal.Data.Models;
 using yuriPortal.Data.ViewModel;
 
 namespace yuriPortal.Core.Interfaces
@@ -14,5 +15,7 @@ namespace yuriPortal.Core.Interfaces
 		List<dynamic> GetUsers(string searchText = null);
 
 		UserSaveViewModel GetUserDetail(string userNm, string defaultImagePath);
+
+		void UpdateUserProfile(UserSaveViewModel userInfo);
 	}
 }

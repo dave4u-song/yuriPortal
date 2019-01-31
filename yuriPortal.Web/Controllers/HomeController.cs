@@ -8,6 +8,10 @@ using yuriPortal.Data.Models;
 using yuriPortal.Core;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using yuriPortal.Core.Interfaces;
+using yuriPortal.Helper;
+using yuriPortal.Data.ViewModel;
+using Newtonsoft.Json;
 
 namespace yuriPortal.Web.Controllers
 {
@@ -17,7 +21,14 @@ namespace yuriPortal.Web.Controllers
 
 		public virtual ApplicationUser _UserManager { get; set; }
 
+		IMenuRepository dbLMenu;
 
+		public HomeController() { }
+
+		public HomeController(IMenuRepository dbLMenu)
+		{
+			this.dbLMenu = dbLMenu;
+		}
 
 		public ActionResult GetMenuList()
 		{
@@ -60,6 +71,56 @@ namespace yuriPortal.Web.Controllers
 			//return PartialView("_Menu");
 		}
 
+		public ActionResult AdminMenu()
+		{
+			return PartialView("_AdminMenu");
+		}
+
+		public ActionResult GetAdminMenuList()
+		{
+			List<MenuViewModel> items = dbLMenu.AdminMenuList();
+			
+			List<JsTreeNode> JsTrees = new List<JsTreeNode>();
+
+			var topLevel = items.Where(x => x.MenuLevel == 1).ToList();
+			for (int i = 0; i < topLevel.Count; i++)
+			{
+				JsTreeNode jNode = new JsTreeNode();
+				Boolean isChildren = false;
+
+				jNode.id = topLevel[i].MenuId;
+				jNode.text = topLevel[i].MenuName;
+				jNode.path = topLevel[i].PagePath;
+
+				int seq = 0;
+				
+				var childLevel = items.Where(x => x.ParentMenuId == topLevel[i].MenuId).ToList();
+
+				var children = new JsTreeNode[childLevel.Count];
+				for (int k = 0; k < childLevel.Count; k++)
+				{
+					var node = new JsTreeNode();
+					node.id = childLevel[k].MenuId;
+					node.text = childLevel[k].MenuName;
+					node.path = childLevel[k].PagePath;
+					node.children = false;
+					isChildren = true;
+
+					children[seq] = node;
+
+					seq++;
+
+				}
+
+				jNode.children = isChildren;
+				jNode.childrens = children;
+	
+				JsTrees.Add(jNode);
+			}
+
+			return Json(JsTrees, JsonRequestBehavior.AllowGet);
+		}
+
 		public static List<Menu> GetChildren(List<Menu> comments, string parentId)
 		{
 			return comments
@@ -96,7 +157,7 @@ namespace yuriPortal.Web.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        //[Authorize]
         public ActionResult About()
         {
             ViewBag.Message = "Your app description page.";

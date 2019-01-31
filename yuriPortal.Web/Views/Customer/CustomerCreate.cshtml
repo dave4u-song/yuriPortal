@@ -1,0 +1,136 @@
+﻿@model yuriPortal.Data.Models.Customer
+
+<script type="text/javascript">
+
+	$(document).ready(function () {
+
+		//$("#btnSave").click(function () {
+
+		//	InitialCustomer();
+
+		//});
+
+
+
+		$("#Custform").validate({
+			rules: {
+				CustName: {
+					required: true,
+					minlength: 3
+				}
+			},
+			messages: {
+				CustName: {
+					required: "Please provide the customer name",
+					minlength: "customer name must be at least 3 characters long"
+				}
+			},
+			//errorElement: "em",
+			errorPlacement: function (error, element) {
+				var placement = element.closest('.input-group');
+				if (!placement.get(0)) {
+					placement = element;
+				}
+				if (error.text() !== '') {
+					placement.after(error);
+				}
+			},
+			highlight: function (label) {
+				$(label).closest('.form-group').removeClass('has-success').addClass('has-error');
+			},
+			unhighlight: function (label) {
+				$(label).closest('.form-group').addClass('has-success').removeClass('has-error');
+			},
+			submitHandler: function (form) {
+				InitialCustomer();
+			}
+		});
+
+	});
+
+	function InitialCustomer() {
+		var customerName = $("#txtCustName").val();
+
+        $.ajax({
+            url: '@Url.Action("SaveCustomer", "Customer")',
+                type: 'POST',
+			data: JSON.stringify({ "CustomerName": customerName }),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (result) {
+                    //$('#dvLoader').hide();
+
+					if (!result.success) {
+						$("#btnClose").click();
+
+						console.log(result);
+						GoCutomerDetail(result);
+					}
+					else {
+						$("#liCust").closest('.form-group').removeClass('has-success').addClass('has-error');
+						console.log(result.responseText);
+
+						var msgHtml = '<a href="/Customer/CustomerDetail/?customerId=' + encodeURIComponent(result.responseText) + '">' + customerName + '</a> is existed.';
+						$("#liError").html(msgHtml);
+						$("#liError").addClass('has-error')
+
+					}
+                }
+            });
+	}
+
+	function GoCutomerDetail(custId) {
+		
+		window.location.href = "/Customer/CustomerDetail/?customerId=" + custId;
+	}
+</script>
+<div id="custom-content" class="modal-block modal-block-md">
+
+	<section class="panel">
+		<header class="panel-heading">
+			<div class="panel-actions">
+				<a href="#" class="fa fa-times modal-dismiss" data-dismiss="modal"></a>
+			</div>
+
+			<h2 class="panel-title">Create Customer</h2>
+		</header>
+		<form id="Custform" class="form-horizontal form-bordered" method="post">
+			<div class="panel-body" id="mySpinner">
+
+				@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+				@*<div class="form-group">
+				<label class="col-md-3 control-label" for="inputDefault">Customer Name</label>
+				<div class="col-md-9">
+					@Html.EditorFor(model => model.CustomerName, new { htmlAttributes = new { @class = "form-control", @id = "txtCustomerName" } })
+					@Html.ValidationMessageFor(model => model.CustomerName, "", new { @class = "text-danger" })
+				</div>
+			</div>*@
+
+				<div class="form-group">
+					<label id="liCust" class="col-sm-3 control-label" for="CustName">Menu Name <span id="spError" class="required">*</span></label>
+					<div class="col-sm-9">
+						<input type="text" name="CustName" class="form-control" id="txtCustName" />
+						<label id="liError"></label>
+					</div>
+				</div>
+
+
+			</div>
+
+			<footer class="panel-footer">
+				<div class="row">
+					<div class="col-md-12 text-right">
+						<button type="button" class="btn btn-default modal-dismiss" id="btnClose">Close</button>
+						<button type="submit" class="btn btn-primary" id="btnSave">Save</button>
+					</div>
+				</div>
+			</footer>
+		</form>
+	</section>
+
+</div>
+
+
+
+

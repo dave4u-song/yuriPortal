@@ -1,60 +1,143 @@
-﻿@model yuriPortal.Web.Models.LoginViewModel
+﻿@model yuriPortal.Data.ViewModel.LoginViewModel
+@{
+	Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
 
 @{
-    ViewBag.Title = "Log in";
+	ViewBag.Title = "Dave Ilkyu Song";
 }
+<!doctype html>
+<html class="fixed">
+<head>
 
-<h2>@ViewBag.Title.</h2>
-<div class="row">
-    <div class="col-md-8">
-        <section id="loginForm">
-            @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" })) {
-                @Html.AntiForgeryToken()
-                <h4>Use a local account to log in.</h4>
-                <hr />
-                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                <div class="form-group">
-                    @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
-                    <div class="col-md-10">
-                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
-                    <div class="col-md-10">
-                        @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
-                        <div class="checkbox">
-                            @Html.CheckBoxFor(m => m.RememberMe)
-                            @Html.LabelFor(m => m.RememberMe)
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
-                        <input type="submit" value="Log in" class="btn btn-default" />
-                    </div>
-                </div>
-                <p>
-                    @Html.ActionLink("Register a new user?", "Register")
-                </p>
-                <p>
-                    @Html.ActionLink("Forget your password?", "ForgotPassword")
-                </p>
-            }
-        </section>
-    </div>
-    <div class="col-md-4">
-        <section id="socialLoginForm">
-            @Html.Partial("_ExternalLoginsListPartial", new yuriPortal.Web.Models.ExternalLoginListViewModel { ReturnUrl = ViewBag.ReturnUrl })
-        </section>
-    </div>
-</div>
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}
+	<!-- Basic -->
+	<meta charset="UTF-8">
+
+	<!-- Mobile Metas -->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+
+	<!-- Web Fonts  -->
+	<link href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800|Shadows+Into+Light" rel="stylesheet" type="text/css">
+
+	@Styles.Render("~/Css/theme")
+
+	<link href="/Content/font-awesome/css/font-awesome.css" rel="stylesheet" />
+
+
+	@Scripts.Render("~/bundles/modernizr/ver1")
+
+</head>
+<body>
+	<!-- start: page -->
+	<section class="body-sign">
+		<div class="center-sign">
+			@*<a href="/" class="logo pull-left">
+				<img src="/Images/Logo.jpg" height="54" />
+			</a>*@
+
+			<div class="panel panel-sign">
+				<div class="panel-title-sign mt-xl text-right">
+					<h2 class="title text-uppercase text-bold m-none"><i class="fa fa-user mr-xs"></i> Sign In</h2>
+				</div>
+				<div class="panel-body">
+					@using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+					{
+						@Html.AntiForgeryToken()
+						@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+						<div class="form-group mb-lg">
+							<label>Username</label>
+							<div class="input-group input-group-icon">
+
+								@Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+								@Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+
+								<span class="input-group-addon">
+									<span class="icon icon-lg">
+										<i class="fa fa-user"></i>
+									</span>
+								</span>
+							</div>
+						</div>
+
+						<div class="form-group mb-lg">
+							<div class="clearfix">
+								<label class="pull-left">Password</label>
+								@*<a href="pages-recover-password.html" class="pull-right">Lost Password?</a>*@
+							</div>
+							<div class="input-group input-group-icon">
+
+								@Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+								@Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+
+								<span class="input-group-addon">
+									<span class="icon icon-lg">
+										<i class="fa fa-lock"></i>
+									</span>
+								</span>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-sm-8">
+								<div class="checkbox-custom checkbox-default">
+									@Html.CheckBoxFor(m => m.RememberMe)
+									@Html.LabelFor(m => m.RememberMe)
+								</div>
+							</div>
+							<div class="col-sm-4 text-right">
+								<button type="submit" class="btn btn-primary hidden-xs">Sign In</button>
+
+							</div>
+						</div>
+
+						<span class="mt-lg mb-lg line-thru text-center text-uppercase">
+							<span>or</span>
+						</span>
+
+						<div class="mb-xs text-center">
+							<a class="btn btn-facebook mb-md ml-xs mr-xs">Connect with <i class="fa fa-facebook"></i></a>
+							<a class="btn btn-twitter mb-md ml-xs mr-xs">Connect with <i class="fa fa-twitter"></i></a>
+						</div>
+
+						<p class="text-center">
+							Don't have an account yet? @Html.ActionLink("Register a new user?", "Register")
+						</p>
+					}
+				</div>
+			</div>
+
+		</div>
+	</section>
+	<!-- end: page -->
+
+
+
+	<script src="/Scripts/jquery-browser-mobile/jquery.browser.mobile.js"></script>
+	<script src="/Content/bootstrap/js/bootstrap.js"></script>
+	<script src="/Scripts/nanoscroller/nanoscroller.js"></script>
+	<script src="/Content/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+	<script src="/Content/magnific-popup/magnific-popup.js"></script>
+	<script src="/Scripts/jquery-placeholder/jquery.placeholder.js"></script>
+
+	<script src="/Scripts/jquery-autosize/jquery.autosize.js"></script>
+	<script src="/Scripts/bootstrap-fileupload/bootstrap-fileupload.min.js"></script>
+	<script src="~/Scripts/jstree/jstree.js"></script>
+
+	<script src="/Scripts/jquery-validation/jquery.validate.js"></script>
+	<script src="/Scripts/ios7-switch/ios7-switch.js"></script>
+	<script src="/Scripts/bootstrap-tagsinput/bootstrap-tagsinput.js"></script>
+	<script src="/Scripts/summernote/summernote.js"></script>
+	<script src="/Scripts/pnotify/pnotify.custom.min.js"></script>
+	<script src="/Scripts/fullcalendar/lib/moment.min.js"></script>
+	<script src="/Scripts/fullcalendar/fullcalendar.js"></script>
+
+	<script src="/javascripts/theme.js"></script>
+	<script src="/javascripts/theme.custom.js"></script>
+	<script src="/javascripts/theme.init.js"></script>
+	<script src="/javascripts/index.js"></script>
+
+</body>
+
+</html>
+

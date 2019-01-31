@@ -11,7 +11,7 @@ using yuriPortal.Core.Repository;
 
 namespace yuriPortal.Web.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class AccountController : Controller
     {
 		UserProfileRepository dbUser = new UserProfileRepository();
@@ -186,7 +186,7 @@ namespace yuriPortal.Web.Controllers
 
 					dbUser.SaveUserProfile(user.Id, userInfo);
 
-					return View("DisplayEmail");
+					return RedirectToAction("Index", "Home");
                 }
 
                 AddErrors(result);

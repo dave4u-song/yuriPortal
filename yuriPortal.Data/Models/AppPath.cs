@@ -23,7 +23,10 @@ namespace yuriPortal.Data.Models
         [StringLength(500)]
         public string Parameters { get; set; }
 
-        public int IsDelete { get; set; }
+		[StringLength(1000)]
+		public string Description { get; set; }
+
+		public int IsDelete { get; set; }
 
         public DateTime CreateDt { get; set; }
 
@@ -34,5 +37,8 @@ namespace yuriPortal.Data.Models
 
         [StringLength(128)]
         public string UpdateId { get; set; }
-    }
+
+		[NotMapped]
+		public string FullUserName { get; set; }
+	}
 }

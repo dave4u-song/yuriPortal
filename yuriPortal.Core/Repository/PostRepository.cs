@@ -216,20 +216,24 @@ namespace yuriPortal.Core.Repository
 			}
 
 			//foreach (var item in postInfo.PostAttach)
-			for (int i = 0; i < postInfo.PostAttach.Length; i++)
+
+			if (postInfo.PostAttach != null)
 			{
-				var boardAttach = new BoardAttach();
-				boardAttach.PostId = postInfo.PostId;
-				//boardAttach.FileId = postInfo.PostAttach[i];
+				for (int i = 0; i < postInfo.PostAttach.Length; i++)
+				{
+					var boardAttach = new BoardAttach();
+					boardAttach.PostId = postInfo.PostId;
+					//boardAttach.FileId = postInfo.PostAttach[i];
 
-				JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
-				dynamic dobj = jsonSerializer.Deserialize<dynamic>(postInfo.PostAttach[i]);
+					JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
+					dynamic dobj = jsonSerializer.Deserialize<dynamic>(postInfo.PostAttach[i]);
 
-				//string obj = JsonConvert.DeserializeObject<string>(postInfo.PostAttach[i].ToString());
-				boardAttach.FileId = dobj[0].ToString();
+					//string obj = JsonConvert.DeserializeObject<string>(postInfo.PostAttach[i].ToString());
+					boardAttach.FileId = dobj[0].ToString();
 
-				context.BoardAttachs.Add(boardAttach);
-				context.SaveChanges();
+					context.BoardAttachs.Add(boardAttach);
+					context.SaveChanges();
+				}
 			}
 		}
 

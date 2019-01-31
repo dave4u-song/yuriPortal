@@ -23,7 +23,7 @@ namespace yuriPortal.Data.Models
 		[StringLength(50)]
         public string ParentMenuId { get; set; }
 
-        [StringLength(50)]
+        [StringLength(128)]
         public string AppPathId { get; set; }
 
         public int? IsDelete { get; set; }

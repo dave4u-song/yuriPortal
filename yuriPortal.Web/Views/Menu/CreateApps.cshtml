@@ -1,0 +1,128 @@
+﻿@using Microsoft.AspNet.Identity;
+@model yuriPortal.Data.Models.AppPath
+
+<script type="text/javascript">
+	function CheckRequiredFields() {
+		var isValid = true;
+		$('.required').each(function () {
+			if ($.trim($(this).val()) == '') {
+				isValid = false;
+				$(this).addClass('red_border');
+
+
+			}
+			else {
+				$(this).removeClass('red_border');
+
+			}
+		});
+		return isValid;
+	}
+
+	$(document).ready(function () {
+
+		$("#btnSave").click(function () {
+
+			$('#mySpinner').addClass('spinner');
+			var AppId		= $("#AppPathId").val();
+			var AppName		= $("#txtAppName").val();
+			var AppPath		= $("#txtAppPath").val();
+			var AppParas	= $("#txtParemeters").val();
+			var codeDesc	= $("#txtDesc").val();
+
+                $.ajax({
+                    url: '@Url.Action("SavePath", "Menu")',
+                        type: 'POST',
+						data: JSON.stringify({ "AppPathId": AppId, "AppPathName": AppName, "PagePath": AppPath, "Parameters": AppParas, "Description": codeDesc }),
+                        dataType: "json",
+                        contentType: "application/json; charset=utf-8",
+					success: function (result) {
+						$('#mySpinner').removeClass('spinner');
+
+						if (result.success) {
+
+							$("#btnClose").click();
+							afterSave();
+						}
+						else {
+							alert(result.SaveError);
+						}
+					},
+					error: function (result) {
+						alert("Wrong == " + result);
+					}
+                    });
+
+
+		});
+
+
+	});
+
+</script>
+
+
+<div id="custom-content" class="modal-block modal-block-md">
+
+	<section class="panel" id="mySpinner">
+		<header class="panel-heading">
+			<div class="panel-actions">
+				<a href="#" class="fa fa-times modal-dismiss" data-dismiss="modal"></a>
+			</div>
+			<h2 class="panel-title">App Create</h2>
+		</header>
+		<div class="panel-body">
+			<form class="form-horizontal form-bordered" method="post">
+				@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+				@Html.Hidden("AppPathId", @ViewBag.AppPathId as string)
+				<div class="form-group">
+					<label class="col-md-3 control-label" for="inputDefault">App Name</label>
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.AppPathName, new { htmlAttributes = new { @class = "form-control", @id = "txtAppName" } })
+						@Html.ValidationMessageFor(model => model.AppPathName, "", new { @class = "text-danger" })
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-md-3 control-label" for="inputDefault">Path</label>
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.PagePath, new { htmlAttributes = new { @class = "form-control", @id = "txtAppPath" } })
+						@Html.ValidationMessageFor(model => model.PagePath, "", new { @class = "text-danger" })
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-md-3 control-label" for="inputDefault">Parameters</label>
+					<div class="col-md-9">
+						@Html.EditorFor(model => model.Parameters, new { htmlAttributes = new { @class = "form-control", @id = "txtParemeters" } })
+						@Html.ValidationMessageFor(model => model.Parameters, "", new { @class = "text-danger" })
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-md-3 control-label" for="inputDisabled">Description</label>
+					<div class="col-md-9">
+						@Html.TextAreaFor(model => model.Description, new { @class = "form-control", id = "txtDesc", row = 3 })
+						@Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+					</div>
+				</div>
+			</form>
+		</div>
+
+		<footer class="panel-footer">
+			<div class="row">
+				<div class="col-md-12 text-right">
+					<button type="button" class="btn btn-default modal-dismiss" data-dismiss="modal" id="btnClose">Close</button>
+					<button type="button" class="btn btn-primary" id="btnSave">Save changes</button>
+				</div>
+			</div>
+		</footer>
+	</section>
+
+</div>
+
+
+
+
+
+

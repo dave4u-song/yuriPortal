@@ -1,0 +1,331 @@
+﻿@using yuriPortal.Web.Helper
+@model yuriPortal.Data.ViewModel.CustomerViewModel
+
+@{
+	Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<script>
+	$(document).ready(function () {
+
+		var noteList = @Html.Raw(Json.Encode(this.ViewBag.getNoteList));
+
+		ViewNoteList(noteList);
+
+		//$("#fileUpdatePhoto").change(function () {
+		$('#fileUpdatePhoto').on('change', function (e) {
+
+			var files = e.target.files;
+			var custId = $("#hidCustomerId").val();
+			var formData = new FormData();
+
+			formData.append("FileUpload", files[0]);
+			formData.append("custId", custId);
+
+			$.ajax({
+				type: "POST",
+				url: '/Customer/SaveCustomerPhoto/?custId=' + encodeURIComponent(custId),
+				data: formData,
+				dataType: 'json',
+				contentType: false,
+				processData: false,
+				success: function (msg) {
+					console.log(msg);
+					$("#imgCustomerPic").attr('src', '/Files/Customerpic/' + msg.fileName);
+				},
+				error: function (error) {
+					alert("errror");
+				}
+			});
+
+
+		});
+
+
+		$('body').on('click', 'a[name="saveNote"]', function () {
+			var noteContent = $("#txtNote").val();
+
+			var childrens = $("#olTimeLine").children('li');
+
+			//$(GetTimeLineRowHtml(noteContent)).insertBefore($(childrens[0])).hide().fadeIn(500);
+
+			var _self = this;
+			
+			$(_self).addClass("disabled");
+	
+			var CustomerId = $("#hidCustomerId").val();
+			var NoteStatus = "0001";
+
+			$.ajax({
+				url: '@Url.Action("SaveCustomerNote", "Customer")',
+				type: 'POST',
+				data: JSON.stringify({ "CustomerId": CustomerId, "NoteContents": noteContent, "NoteStatus": NoteStatus }),
+				dataType: "json",
+				contentType: "application/json; charset=utf-8",
+				success: function (result) {
+					var NoteId		= result.NoteId;
+					var CustomerId	= result.CustomerId;
+					var NoteStatus	= result.NoteStatus;
+					var NoteContents	= result.NoteContents;
+					var FullName	= result.FullName;
+					var CreateDt	= result.CreateDt;
+
+					var strNoteHtml = GetTimeLineRowHtml(NoteId, CustomerId, NoteContents, FullName, CreateDt, NoteStatus);
+
+					$(strNoteHtml).insertBefore($(childrens[0])).hide().fadeIn(500);
+
+					$(_self).removeClass("disabled");
+				},
+				error: function (result) {
+					alert("Wrong == " + result);
+				}
+			});
+		});
+	});
+
+	function ViewNoteList(noteList) {
+		var childrens = $("#olTimeLine").children('li');
+
+		for (var i = 0; i < noteList.length; i++) {
+
+			var CustomerId		= noteList[i].CustomerId;
+			var NoteId			= noteList[i].NoteId;
+			var NoteStatus		= noteList[i].NoteStatus;
+			var NoteContents	= noteList[i].NoteContents;
+			var CreateId		= noteList[i].CreateId;
+			var FullName		= noteList[i].FullName;
+			var CreateDt		= noteList[i].CreateDt;
+
+
+			var strHtml = GetTimeLineRowHtml(NoteId, CustomerId, NoteContents, FullName, CreateDt, NoteStatus);
+
+			$(strHtml).insertBefore($(childrens[0])).hide().fadeIn(500);
+
+		}
+	}
+
+	function GetTimeLineRowHtml(NoteId, CustomerId, NoteContents, FullName, CreateDt, NoteStatus) {
+		var noteHtml = "";
+
+		noteHtml = noteHtml + "<li>";
+		noteHtml = noteHtml + "	<div class=\"tm-box\">";
+		noteHtml = noteHtml + "	<input type=\"hidden\" value=\"" + NoteId + "\" />";
+		noteHtml = noteHtml + "		<p class=\"text-muted mb-none\">" + FullName + " " + ToJavaScriptDate(CreateDt)  +"</p>";
+		noteHtml = noteHtml + "		<p>" + NoteContents + "</p>";
+		noteHtml = noteHtml + "	</div>";
+		noteHtml = noteHtml + "</li>";
+
+		return noteHtml;
+	}
+
+	function CallTabContent(tab) {
+
+		var txtHtml = $("#" + tab).html().trim();
+		var custId = $("#hidCustomerId").val();
+		var url = "";
+
+		if (txtHtml == "") {
+			switch (tab) {
+				case 'note':
+					url = "/Customer/ManageNote";
+					break;
+				case 'TabDeal':
+					url = "/Customer/ManageDeal";
+					break;
+				case 'TabActivity':
+					url = "/Customer/ManageActivity";
+					break;
+				case 'TabPurchase':
+					url = "/Customer/ManagePurchase";
+					break;
+				case 'TabInvoice':
+					url = "/Customer/ManageInvoice";
+					break;
+				case 'TabEdit':
+					url = "/Customer/ManageEdit";
+					break;
+			}
+
+			$("#" + tab).load(url, { 'customerId': custId }, 
+			function (response, status, xhr)
+			{
+				if (status == "error")
+				{
+					alert("An error occurred while loading the results.");
+				}
+			});
+		}
+	}
+</script>
+
+<div class="row">
+	<div class="col-md-4 col-lg-3">
+
+		<section class="panel">
+			<div class="panel-body">
+				<div class="thumb-info mb-md">
+					<img src="@Html.Raw(Model.CustomerPic)" id="imgCustomerPic" class="rounded img-responsive">
+					<div class="thumb-info-title">
+						<span class="thumb-info-inner">@Html.Label(Model.CustomerName) </span>
+					</div>
+				</div>
+				<label class="btn btn-block btn-primary">
+					Update Photo<input type="file" id="fileUpdatePhoto" style="display: none;" accept="image/*">
+				</label>
+				<input type="hidden" id="hidCustomerId" value="@Html.Raw(Model.CustomerId)" />
+				<hr class="dotted short">
+
+				<div class="clearfix">
+					<ul class="list-unstyled user_data">
+						<li>
+							<i class="fa fa-map-marker user-profile-icon"></i> @Html.Label(Model.AddressCity) @Html.Label(Model.AddressProvince), @Html.Label(Model.AddressCountry)
+						</li>
+
+						<li>
+							<i class="fa fa-pencil user-profile-icon"></i> @Html.Raw(Model.CustEmail)
+						</li>
+
+						<li>
+							<i class="fa fa-mobile user-profile-icon"></i> @Html.Label(Model.CustPhoneNumber)
+						</li>
+						<li>
+							<i class="fa fa-mobile user-profile-icon"></i> @Html.Label(Model.CustMobileNumber)
+						</li>
+						<li>
+							<i class="fa fa-mobile user-profile-icon"></i> @Html.Label(Model.CustFaxNumber)
+						</li>
+					</ul>
+				</div>
+
+				<hr class="dotted short">
+
+				<div class="social-icons-list">
+					<a rel="tooltip" data-placement="bottom" target="_blank" href="http://www.facebook.com" data-original-title="Facebook"><i class="fa fa-facebook"></i><span>Facebook</span></a>
+					<a rel="tooltip" data-placement="bottom" target="_blank" href="http://www.twitter.com" data-original-title="Twitter"><i class="fa fa-twitter"></i><span>Twitter</span></a>
+				</div>
+
+			</div>
+		</section>
+
+		<section class="panel">
+			<div class="panel-body">
+				<h4 class="mb-md">Sale Stats</h4>
+				<ul class="simple-card-list mb-xlg">
+					<li class="primary">
+						<h3>12</h3>
+						<p>Order Conut</p>
+					</li>
+					<li class="primary">
+						<h3>$ 189,000.00</h3>
+						<p>Sales amount</p>
+					</li>
+					<li class="primary">
+						<h3>16</h3>
+						<p>Nullam quris ris.</p>
+					</li>
+				</ul>
+				<h4 class="mb-md">Overview</h4>
+				<ul class="simple-bullet-list mb-xlg">
+					<li class="red">
+						<span class="title">Activity </span>
+						<span class="description truncate">5 Complete, 2 Pendding</span>
+					</li>
+					<li class="green">
+						<span class="title">Deal</span>
+						<span class="description truncate">2 Pendding</span>
+					</li>
+					<li class="blue">
+						<span class="title">Invoice</span>
+						<span class="description truncate">3 Complete</span>
+					</li>
+					<li class="orange">
+						<span class="title">Purchase</span>
+						<span class="description truncate">3 Processing</span>
+					</li>
+				</ul>
+
+			</div>
+
+		</section>
+
+</div>
+
+	<div class="col-md-8 col-lg-9">
+		<div class="tabs">
+			<ul class="nav nav-tabs tabs-primary">
+				<li class="active">
+					<a href="#note" data-toggle="tab">Note</a>
+				</li>
+				<li>
+					<a href="#TabDeal" onclick="CallTabContent('TabDeal');" data-toggle="tab">Deal</a>
+				</li>
+				<li>
+					<a href="#TabActivity" onclick="CallTabContent('TabActivity');" data-toggle="tab">Activity</a>
+				</li>
+				<li>
+					<a href="#TabPurchase" onclick="CallTabContent('TabPurchase');" data-toggle="tab">Purchase</a>
+				</li>
+				<li>
+					<a href="#TabInvoice"onclick="CallTabContent('TabInvoice');"  data-toggle="tab">Invoice</a>
+				</li>
+				<li>
+					<a href="#TabEdit" onclick="CallTabContent('TabEdit');" data-toggle="tab">Customer Edit</a>
+				</li>
+			</ul>
+			<div class="tab-content">
+				<div id="note" class="tab-pane active">
+					<h4 class="mb-md">Update Note</h4>
+					<section class="simple-compose-box mb-xlg">
+						<form method="get" action="/">
+							<textarea name="message-text" id="txtNote" data-plugin-textarea-autosize placeholder="What's demands of the customer?" rows="3"></textarea>
+						</form>
+						<div class="compose-box-footer">
+							<ul class="compose-btn">
+								<li>
+									<a class="btn btn-primary btn-xs" name="saveNote">Note</a>
+								</li>
+							</ul>
+						</div>
+					</section>
+					<h4 class="mb-xlg">Timeline</h4>
+
+					<div class="timeline timeline-simple mt-xlg mb-md">
+						<div class="tm-body">
+							<ol class="tm-items" id="olTimeLine">
+								<li>
+
+								</li>
+							</ol>
+						</div>
+					</div>
+
+
+				</div>
+
+				<div id="TabDeal" class="tab-pane">
+
+				</div>
+
+				<div id="TabActivity" class="tab-pane">
+
+				</div>
+
+				<div id="TabPurchase" class="tab-pane">
+
+				</div>
+
+				<div id="TabInvoice" class="tab-pane">
+
+				</div>
+
+				<div id="TabEdit" class="tab-pane">
+
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+
+</div>
+

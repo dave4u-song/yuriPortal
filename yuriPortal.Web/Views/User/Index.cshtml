@@ -55,7 +55,7 @@
 <script type="text/javascript">
 
 	function afterSave() {
-		GetPageData(1, 15);
+		BindDataToList(1, 15);
 	}
 
 	function CreateUser() {
@@ -164,10 +164,10 @@
 	$(document).ready(function () {
 	
 		$('#selCodeGroup').change(function() {
-		  GetPageData(1, 15);
+			BindDataToList(1, 15);
 		});
 
-		GetPageData(1, 15);
+		BindDataToList(1, 15);
 
 		$("#btnCode").click(function () {
 			if ($("#selCodeGroup").prop('selectedIndex') == 0) {
@@ -257,21 +257,7 @@
 
 	}
 
-	function ToJavaScriptDate(value) {
-
-		if (value != null) {
-			var pattern = /Date\(([^)]+)\)/;
-			var results = pattern.exec(value);
-			var dt = new Date(parseFloat(results[1]));
-
-			return (dt.getMonth() + 1) + "/" + dt.getDate() + "/" + dt.getFullYear();
-		}
-		else {
-			return "";
-		}
-	}
-
-	function GetPageData(pageNum, pageSize) {
+	function BindDataToList(pageNum, pageSize) {
 		//After every trigger remove previous data and paging
 		$("#tblData").empty();
 		$("#pagingArea").empty();
@@ -279,111 +265,43 @@
 		var searchValue = "";
 
 		$.getJSON("/User/GetUsers", { pageNumber: pageNum, pageSize: pageSize, searchText: searchValue }, function (response) {
-			//alert(JSON.parse(response));
 
 			var rowData = "";
-			for (var i = 0; i < response.Data.length; i++) {
+			if (response.Data.length > 0) {
+				for (var i = 0; i < response.Data.length; i++) {
 
-				var buttonType = "";
-				var deleteText = "";
-				if (response.Data[i].IsDelete) {
-					rowData = rowData + '<tr class="warning" id="row' + i.toString() + '">';
-					buttonType = '<button type="button" class="btn btn-xs btn-primary" onclick="changeRowStauts(this);" data-id="' + i.toString() + '" >Active</button>';
-					deleteText = "Deleted";
+					var buttonType = "";
+					var deleteText = "";
+					if (response.Data[i].IsDelete) {
+						rowData = rowData + '<tr class="warning" id="row' + i.toString() + '">';
+						buttonType = '<button type="button" class="btn btn-xs btn-primary" onclick="changeRowStauts(this);" data-id="' + i.toString() + '" >Active</button>';
+						deleteText = "Deleted";
+					}
+					else {
+						rowData = rowData + '<tr id="row' + i.toString() + '">';
+						buttonType = '<button type="button" class="btn btn-xs btn-danger" onclick="changeRowStauts(this);" data-id="' + i.toString() + '" >Delete</button>';
+						deleteText = "Active";
+					}
+
+					rowData = rowData + '<td><a href="/User/UserDetail/?userNm=' + encodeURIComponent(response.Data[i].UserName) + '">' + response.Data[i].UserName + '</a><input type="hidden" value="' + response.Data[i].Id + '" id="groupVal' + i.toString() + '"></td>';
+					rowData = rowData + '<td>' + response.Data[i].FirstName + ' ' + response.Data[i].LastName + '<input type="hidden" value="' + response.Data[i].UserName + '" id="codeVal' + i.toString() + '"></td>';
+					rowData = rowData + '<td>' + response.Data[i].City + ', ' + response.Data[i].Province + '</td>';
+					rowData = rowData + '<td>' + response.Data[i].PhoneNumber + '</td>';
+					rowData = rowData + '<td id="td' + i.toString() + '">' + deleteText + '</td>';
+					rowData = rowData + '<td>' + ToJavaScriptDate(response.Data[i].LastAccessDt) + '</td>';
+					rowData = rowData + '<td>' + response.Data[i].LanguageCd + '</td>';
+					rowData = rowData + '<td class="text-center">' + buttonType + '</td></tr>';
+
 				}
-				else {
-					rowData = rowData + '<tr id="row' + i.toString() + '">';
-					buttonType = '<button type="button" class="btn btn-xs btn-danger" onclick="changeRowStauts(this);" data-id="' + i.toString() + '" >Delete</button>';
-					deleteText = "Active";
-				}
-
-				rowData = rowData + '<td><a href="/User/UserDetail/?userNm=' + encodeURIComponent(response.Data[i].UserName) +'">' + response.Data[i].UserName + '</a><input type="hidden" value="' + response.Data[i].Id + '" id="groupVal' + i.toString() + '"></td>';
-				rowData = rowData + '<td>' + response.Data[i].FirstName + ' ' + response.Data[i].LastName + '<input type="hidden" value="' + response.Data[i].UserName + '" id="codeVal' + i.toString() + '"></td>';
-				rowData = rowData + '<td>' + response.Data[i].City + ', ' + response.Data[i].Province + '</td>';
-				rowData = rowData + '<td>' + response.Data[i].PhoneNumber + '</td>';
-				rowData = rowData + '<td id="td' + i.toString() + '">' + deleteText + '</td>';
-				rowData = rowData + '<td>' + ToJavaScriptDate(response.Data[i].LastAccessDt) + '</td>';
-				rowData = rowData + '<td>' + response.Data[i].LanguageCd + '</td>';
-				rowData = rowData + '<td class="text-center">' + buttonType + '</td></tr>';
-
 			}
-
+			else {
+				rowData = '<tr><td colspan="5" class="text-center">No data found</td></tr>';
+			}
 			$("#tblData").append(rowData);
-			PaggingTemplate(response.TotalPages, response.CurrentPage, response.PageSize);
+
+			SetPageNavigation(response.TotalPages, response.CurrentPage, response.PageSize, response.TotalCount);
 		});
 	}
 
-
-	function getListNum(current, { range, pages, start = 1 }) {
-		const paging = [];
-		var i = Math.min(pages + start - range, Math.max(start, current - (range / 2 | 0)));
-		const end = i + range;
-
-		while (i < end) {
-			paging.push(i++)
-		}
-
-		return paging;
-	}
-
-	function PaggingTemplate(totalPage, currentPage, pagesize) {
-		var template = "";
-		var TotalPages = totalPage;
-		var CurrentPage = currentPage;
-		var PageNumberArray = [];
-
-		var pageCount = (TotalPages / pagesize) + (TotalPages % pagesize != 0) ? 1 : 0 ;
-		const pageNums = { range: pageCount, pages: TotalPages };
-
-		PageNumberArray = getListNum(currentPage, pageNums);
-
-
-		console.log(PageNumberArray);
-
-		var FirstPage = 1;
-		var LastPage = totalPage;
-		if (totalPage != currentPage) {
-			var ForwardOne = currentPage + 1;
-		}
-		var BackwardOne = 1;
-		if (currentPage > 1) {
-			BackwardOne = currentPage - 1;
-		}
-
-		//var firstDisabled = (currentPage == 1) ? "disabled" : "";
-		//var lastDisabled = (currentPage == TotalPages) ? "disabled" : "";
-
-		//template = '<div class="col-md-6 pull-left">' + CurrentPage + ' of ' + TotalPages + ' pages</div>'
-		template = template + '<ul class="pagination">';
-
-		if (currentPage == 1) {
-			template = template + '<li class="first disabled"><a href="#"><i class="fa fa-angle-double-left"></i></a></li>' +
-				'<li class="prev disabled"><a href="#"><i class="fa fa-angle-left"></i></a></li>';
-		}
-		else {
-			template = template + '<li class="first"><a href="#" onclick="GetPageData(' + FirstPage + ')"><i class="fa fa-angle-double-left"></i></a></li>' +
-				'<li class="prev"><a href="#" onclick="GetPageData(' + BackwardOne + ')"><i class="fa fa-angle-left"></i></a></li>';
-		}
-
-		for (var i = 0; i < PageNumberArray.length; i++) {
-
-			if (CurrentPage == PageNumberArray[i])
-				template = template + '<li class="active"><a href = "#">' + PageNumberArray[i] + '</a></li>';
-			else
-				template = template + '<li><a onclick="GetPageData(' + PageNumberArray[i] + ')" href="#">' + PageNumberArray[i] + '</a></li>';
-		}
-
-		if (currentPage >= TotalPages) {
-			template = template + '<li class="next disabled"><a href="#"><i class="fa fa-angle-right"></i></a></li>';
-			template = template + '<li class="last disabled"><a href="#"><i class="fa fa-angle-double-right"></i></a></li></ul>';
-		}
-		else {
-			template = template + '<li class="next"><a href="#" onclick="GetPageData(' + ForwardOne + ')"><i class="fa fa-angle-right"></i></a></li>';
-			template = template + '<li class="last"><a href="#" onclick="GetPageData(' + LastPage + ')"><i class="fa fa-angle-double-right"></i></a></li></ul>';
-		}
-
-		$("#pagingArea").append(template);
-
-	}
 </script>
 

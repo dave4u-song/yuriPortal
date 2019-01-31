@@ -11,7 +11,7 @@ using yuriPortal.Web.ViewModel;
 
 namespace yuriPortal.Web.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class ManageController : Controller
     {
 		public ManageController()

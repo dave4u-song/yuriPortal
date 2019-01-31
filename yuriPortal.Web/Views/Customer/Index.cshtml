@@ -1,0 +1,250 @@
+﻿@{
+	Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@model IEnumerable<yuriPortal.Data.Models.ApplicationUser>
+<section class="panel">
+	<div class="form-group">
+		<div class="row">
+			<div class="col-md-9">
+				<button type="button" class="btn btn-primary" onclick="CreateCustomer();">Create Customer</button>
+			</div>
+			<div class="col-md-3 text-md-right">
+
+			</div>
+		</div>
+	</div>
+
+	<div class="panel-body">
+		<div class="table-responsive" id="divList">
+			<table class="table table-bordered table-striped table-condensed mb-none">
+				<thead>
+					<tr>
+						<th class="text-center">Customer Name</th>
+						<th class="text-center">Address</th>
+						<th class="text-center">Phone Number</th>
+						<th class="text-center">Email</th>
+						<th class="text-center">Customer Type</th>
+						<th class="text-center">Status</th>
+						<th class="text-center">Task</th>
+					</tr>
+				</thead>
+				<tbody id="tblData"></tbody>
+			</table>
+
+		</div>
+
+
+	</div>
+
+
+	<div id="pagingArea">
+
+	</div>
+
+</section>
+
+
+<script type="text/javascript">
+
+	function afterSave() {
+		BindDataToList(1, 15);
+	}
+
+	function CreateCustomer() {
+		$.magnificPopup.open(
+		{
+			type: 'ajax',
+			closeOnBgClick: false,
+			closeBtnInside: false,
+			enableEscapeKey: true,
+			mainClass: 'mfp-fade',
+			items: {
+				src: "/Customer/CustomerCreate"
+			},
+			callbacks: {
+				open: function () {
+					$.magnificPopup.instance.close = function () {
+						$.magnificPopup.proto.close.call(this);
+					}
+				},
+				ajaxContentAdded: function () {
+					var m = this;
+					this.content.find('.modal-dismiss').on('click', function (e) {
+						e.preventDefault();
+						m.close();
+					});
+				}
+			},
+		});
+	}
+
+	function openUserDetail(custid) {
+		$.magnificPopup.open(
+			{
+				type: 'ajax',
+				closeOnBgClick: false,
+				closeBtnInside: false,
+				enableEscapeKey: true,
+				mainClass: 'mfp-fade',
+				items: {
+					src: "/Customer/CustomerReview?" + custid
+				},
+				callbacks: {
+					open: function () {
+						$.magnificPopup.instance.close = function () {
+							$.magnificPopup.proto.close.call(this);
+						}
+					},
+					ajaxContentAdded: function () {
+						var m = this;
+						this.content.find('.modal-dismiss').on('click', function (e) {
+							e.preventDefault();
+							m.close();
+						});
+					}
+				},
+			});
+	}
+
+	$(document).ready(function () {
+		BindDataToList(1, 15);
+
+		$('#selCodeGroup').change(function() {
+			BindDataToList(1, 15);
+		});
+
+		$("#btnCode").click(function () {
+			if ($("#selCodeGroup").prop('selectedIndex') == 0) {
+
+				alert("Please select the Code group.");
+
+				$.magnificPopup.close();
+				return false;
+			}
+			else {
+
+				AddCodePopup("ADD");
+			}
+		});
+
+		$(".btn-xs").click(function (e) {
+			alert(3);
+			var options = {};
+			var rowId = $(this).attr("data-id");
+			var $row = $("#" + rowId);
+			$row.fadeOut(1000, function () {
+				$row.addClass("warning");
+			});
+		});
+
+
+
+	});
+
+	function activeRow(obj) {
+		//var rowId = $(this).attr("data-id");
+		var rowId = $(obj).attr("data-id");;
+		var $row = $("#" + rowId);
+
+		$row.removeClass("warning");
+
+	}
+
+	function changeRowStauts(obj) {
+		//var rowId = $(this).attr("data-id");
+
+		var rowId = $(obj).attr("data-id");;
+		var $row = $("#row" + rowId);
+
+		var $groupVal = $("#groupVal" + rowId);
+		var $codeVal = $("#codeVal" + rowId);
+		var $td = $("#td" + rowId);
+		var strChange = "";
+		var strAction = $(obj).text();
+
+		if (strAction == "Delete") {
+			$row.addClass("warning");
+			$(obj).removeClass("btn btn-xs btn-danger");
+			$(obj).addClass("btn btn-xs btn-primary");
+			$(obj).text("Active");
+			strChange = "Deleted";
+		}
+		else {
+			$row.removeClass("warning");
+			$(obj).text("Delete");
+			$(obj).removeClass("btn btn-xs btn-primary");
+			$(obj).addClass("btn btn-xs btn-danger");
+			strChange = "Active";
+		}
+
+		var CodeGroupID = $groupVal.val();
+		var codeValue = $codeVal.val();
+
+		$.ajax({
+			url: '@Url.Action("UpdateCodeStatus", "CommCode")',
+				type: 'POST',
+			data: JSON.stringify({ "groupVal": CodeGroupID, "codeVal": codeValue, "Action": strAction}),
+				dataType: "json",
+				contentType: "application/json; charset=utf-8",
+			success: function (result) {
+				if (result.success) {
+					$td.text(strChange);
+				}
+				else {
+					alert(result.SaveError);
+				}
+			},
+			error: function (result) {
+				alert("Wrong == " + result);
+			}
+		});
+
+	}
+
+	function BindDataToList(pageNum, pageSize) {
+		//After every trigger remove previous data and paging
+		$("#tblData").empty();
+		$("#pagingArea").empty();
+
+		var searchValue = "";
+
+		$.getJSON("/Customer/GetCustomerList", { pageNumber: pageNum, pageSize: pageSize, searchText: searchValue }, function (response) {
+
+			var rowData = "";
+			console.log(response);
+			if (response.Data.length > 0) {
+				for (var i = 0; i < response.Data.length; i++) {
+
+					var buttonType = "";
+					var deleteText = "";
+					if (response.Data[i].IsDelete) {
+						rowData = rowData + '<tr class="warning" id="row' + i.toString() + '">';
+						buttonType = '<button type="button" class="btn btn-xs btn-primary" onclick="changeRowStauts(this);" data-id="' + i.toString() + '" >Active</button>';
+						deleteText = "Deleted";
+					}
+					else {
+						rowData = rowData + '<tr id="row' + i.toString() + '">';
+						buttonType = '<button type="button" class="btn btn-xs btn-danger" onclick="changeRowStauts(this);" data-id="' + i.toString() + '" >Delete</button>';
+						deleteText = "Active";
+					}
+
+					rowData = rowData + '<td><a href="/Customer/CustomerDetail/?customerId=' + encodeURIComponent(response.Data[i].CustomerId) + '">' + response.Data[i].CustomerName + '</a><input type="hidden" value="' + response.Data[i].Id + '" id="groupVal' + i.toString() + '"></td>';
+					rowData = rowData + '<td>' + response.Data[i].CustomerName + '<input type="hidden" value="' + response.Data[i].CustomerId + '" id="codeVal' + i.toString() + '"></td>';
+					rowData = rowData + '<td>' + response.Data[i].AddressCity + ', ' + response.Data[i].AddressProvince + '</td>';
+					rowData = rowData + '<td>' + response.Data[i].CustPhoneNumber + '</td>';
+					rowData = rowData + '<td>' + response.Data[i].CustEmail + '</td>';
+					rowData = rowData + '<td>' + response.Data[i].CustomerType + '</td>';
+					rowData = rowData + '<td id="td' + i.toString() + '">' + deleteText + '</td>';
+				}
+			}
+			else {
+				rowData = '<tr><td colspan="8" class="text-center">No data found</td></tr>';
+			}
+			$("#tblData").append(rowData);
+
+			SetPageNavigation(response.TotalPages, response.CurrentPage, response.PageSize, response.TotalCount);
+		});
+	}
+
+</script>

@@ -1,0 +1,125 @@
+﻿@using yuriPortal.Web.Helper
+@model IEnumerable<yuriPortal.Data.Models.CustTask>
+
+<section class="panel">
+	<div class="form-group">
+		<div class="row">
+			<div class="col-md-6">
+				<button type="button" class="btn btn-primary" onclick="AddActivity();">Create Activity</button>
+			</div>
+
+			<div class="col-md-2 text-md-right">
+				@*@Html.DropDownList("uilist", CodeManager.getCodeListByGroup("LANGUAGE", false), null, new { @class = "form-control populate", @id = "ddlLangCode" })*@
+			</div>
+
+			<div class="col-md-4 text-md-right">
+				<div class="input-group">
+					<input type="text" class="form-control" id="txtSearch">
+					<span class="input-group-btn">
+						<button class="btn btn-primary" type="button" id="btnSearch">Search</button>
+					</span>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<div class="panel-body">
+		<div class="table-responsive" id="divList">
+			<table class="table table-bordered table-striped table-condensed mb-none">
+				<thead>
+					<tr>
+						<th class="text-center">Activity Title</th>
+						<th class="text-center">Activity Begin Date</th>
+						<th class="text-center">Activity End Date</th>
+						<th class="text-center">Status</th>
+						<th class="text-center">Assigned</th>
+					</tr>
+				</thead>
+
+				<tbody id="ContentList"></tbody>
+
+			</table>
+
+		</div>
+
+
+	</div>
+
+
+	<div id="pagingArea">
+
+	</div>
+
+</section>
+
+
+<script type="text/javascript">
+
+	$(document).ready(function () {
+
+		BindDataToList(1, 15);
+
+		$("#btnSearch").click(function () {
+			BindDataToList(1, 15);
+		});
+
+		$('#ddlLangCode').change(function () {
+			BindDataToList(1, 15);
+		});
+
+		$('#txtSearch').keypress(function (e) {
+			var key = e.which;
+			if (key == 13)  // the enter key code
+			{
+				$("#btnSearch").click();
+				return false;
+			}
+		});
+
+	});
+
+	function AddActivity(CustTaskId) {
+
+		var url = "";
+		if (CustTaskId === undefined)
+			url = "/Customer/CreateActivity";
+		else
+			url = "/Customer/ViewActivity/?CustTaskId=" + CustTaskId;
+
+		OpenPopupWithPage(url);
+	}
+
+
+	function BindDataToList(pageNum, pageSize) {
+
+		$("#ContentList").empty();
+		$("#pagingArea").empty();
+
+		var searchValue = $("#txtSearch").val();
+		var searchLangCode = $("#ddlLangCode option:selected").val();
+
+		$.getJSON("/Customer/GetActivityList", { pageNumber: pageNum, pageSize: pageSize, seachText: searchValue }, function (response) {
+
+			var rowData = "";
+
+			if (response.Data.length > 0) {
+				for (var i = 0; i < response.Data.length; i++) {
+					rowData = rowData + '<tr id="row' + i.toString() + '">';
+					rowData = rowData + '<td><a href="#" onclick="AddActivity(\'' + response.Data[i].CustTaskId + '\');">' + response.Data[i].CustTaskId + '</a></td>';
+					rowData = rowData + '<td><a href="#" onclick="AddActivity(\'' + response.Data[i].CustTaskId + '\');">' + response.Data[i].TaskBeginDt + '</a></td>';
+					rowData = rowData + '<td>' + response.Data[i].TaskBeginDt + '</td>';
+					rowData = rowData + '<td>' + response.Data[i].TaskStatus + '</td>';
+					rowData = rowData + '<td>' + response.Data[i].TaskType + '</td>';
+					rowData = rowData + '</tr>';
+				}
+			}
+			else {
+				rowData = '<tr><td colspan="5" class="text-center">No data found</td></tr>';
+			}
+
+			$("#ContentList").append(rowData);
+			SetPageNavigation(response.TotalPages, response.CurrentPage, response.PageSize, response.TotalCount);
+		});
+	}
+</script>

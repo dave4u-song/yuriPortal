@@ -41,6 +41,7 @@ namespace yuriPortal.Core.Repository
 
 
 		public void SaveCode(CommCode codes, string userId){
+			codes.Code_ID = codes.Code_Value;
 			codes.IsDelete = 0;
 			codes.UpdateDt = DateTime.Now;
 			codes.CreateDt = DateTime.Now;

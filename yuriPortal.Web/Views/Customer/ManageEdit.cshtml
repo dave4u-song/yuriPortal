@@ -1,0 +1,201 @@
+﻿@using yuriPortal.Web.Helper
+@model yuriPortal.Data.ViewModel.CustomerViewModel
+
+<script type="text/javascript">
+
+	$(document).ready(function () {
+
+		$("#btnSave").click(function () {
+
+			console.log("Partial View");
+		});
+
+
+	});
+
+</script>
+<form id="Editform" class="form-horizontal" method="post">
+	<h5 class="text-semibold text-dark text-uppercase">Customer Information</h5>
+
+	<fieldset>
+		<div class="form-group">
+			<label class="col-sm-3 control-label">Customer Name <span class="required">*</span></label>
+			<div class="col-sm-9">
+				<input type="text" name="customerName" class="form-control" id="txtCustomerName" value="@Html.Raw(Model.CustomerName)" />
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label class="col-sm-3 control-label">Email <span class="required">*</span></label>
+			<div class="col-sm-9">
+				<div class="input-group">
+					<span class="input-group-addon">
+						<i class="fa fa-envelope"></i>
+					</span>
+					<input type="email" id="txtEmail" name="email" class="form-control" placeholder="dave4u.song@gmail.com" value="@Html.Raw(Model.CustEmail)" />
+				</div>
+			</div>
+			<div class="col-sm-9">
+
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label class="col-sm-3 control-label">Phone Number</label>
+			<div class="col-sm-9">
+				<input type="text" name="phonenumber" class="form-control" id="txtWorkPhone" value="@Html.Raw(Model.CustPhoneNumber)" />
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label class="col-sm-3 control-label">Mobile Number</label>
+			<div class="col-sm-9">
+				<input type="text" name="mobilenumber" class="form-control" id="txtMobilePhone" value="@Html.Raw(Model.CustMobileNumber)" />
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label class="col-sm-3 control-label">Fax Number</label>
+			<div class="col-sm-9">
+				<input type="text" name="faxnumber" class="form-control" id="txtFax" value="@Html.Raw(Model.CustFaxNumber)" />
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label class="col-sm-3 control-label">Street</label>
+			<div class="col-sm-9">
+				<input type="text" name="Street" class="form-control" id="txtStreet" value="@Html.Raw(Model.AddressStreet)" />
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label">City</label>
+			<div class="col-sm-9">
+				<input type="text" name="City" class="form-control" id="txtCity" value="@Html.Raw(Model.AddressCity)" />
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label">Province</label>
+			<div class="col-sm-9">
+				<input type="text" name="Province" class="form-control" id="txtProvince" value="@Html.Raw(Model.AddressProvince)" />
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label">Country</label>
+			<div class="col-sm-9">
+				<input type="text" name="Country" class="form-control" id="txtCountry" value="@Html.Raw(Model.AddressCountry)" />
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label">Postal Code/ZIP</label>
+			<div class="col-sm-9">
+				<input type="text" name="PostalCode" class="form-control" id="txtPostalCd" value="@Html.Raw(Model.PostalCode)" />
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label">Custmer Type</label>
+			<div class="col-sm-9">
+				@Html.DropDownList("genderlist", CodeManager.getCodeListByGroup("CUSTOMER_TYPE"), null, new { @class = "form-control populate", @id = "ddlCustType" })
+				<label class="error" for="Gender"></label>
+			</div>
+		</div>
+
+	</fieldset>
+	<div class="panel-footer">
+		<div class="row">
+			<div class="col-md-9 col-md-offset-3">
+				<button type="submit" class="btn btn-primary">Update</button>
+			</div>
+		</div>
+	</div>
+
+</form>
+<script type="text/javascript">
+	$(document).ready(function () {
+		$("#Editform").validate({
+			rules: {
+				customerName: {
+					required: true,
+					minlength: 2
+				},
+				email: {
+					required: true,
+					email: true
+				}
+			},
+			messages: {
+				customerName: {
+					required: "Please enter a customer name",
+					minlength: "Customer name must consist of at least 2 characters"
+				},
+				email: "Please enter a valid email address",
+			},
+			//errorElement: "em",
+			errorPlacement: function (error, element) {
+				var placement = element.closest('.input-group');
+				if (!placement.get(0)) {
+					placement = element;
+				}
+				if (error.text() !== '') {
+					placement.after(error);
+				}
+			},
+			highlight: function (label) {
+				//$(element).parents(".col-sm-5").addClass("has-error").removeClass("has-success");
+				$(label).closest('.form-group').removeClass('has-success').addClass('has-error');
+			},
+			unhighlight: function (label) {
+				//$(element).parents(".col-sm-5").addClass("has-success").removeClass("has-error");
+				$(label).closest('.form-group').addClass('has-success').removeClass('has-error');
+			},
+			submitHandler: function (form) {
+	
+				SaveCustomerInfo();
+			}
+		});
+
+	});
+
+
+	function SaveCustomerInfo() {
+		$.preloader.start({
+			modal: true
+		});
+
+		var custId = $("#hidCustomerId").val();
+		var custName = $("#txtCustomerName").val();
+		var custEmail = $("#txtEmail").val();
+		var custPhone = $("#txtWorkPhone").val();
+		var custMobile = $("#txtMobilePhone").val();
+		var custFax = $("#txtFax").val();
+		var custStreet = $("#txtStreet").val();
+
+		var cutCity = $("#txtCity").val();
+		var custProvince = $("#txtProvince").val();
+		var custCountry = $("#txtCountry").val();
+
+		var postal = $("#txtPostalCd").val();
+		var custType = $("#ddlCustType option:selected").val();
+
+		var	url = "/Customer/UpdateCustomer";
+
+		$.ajax({
+			url: url,
+			type: 'POST',
+			data: JSON.stringify({ "CustomerId": custId, "CustomerName": custName, "CustEmail": custEmail, "CustPhoneNumber": custPhone, "CustMobileNumber": custMobile, "CustFaxNumber": custFax, "Street": custStreet, "Province": custProvince, "City": cutCity, "Country": custCountry, "PostalCode": postal, "CustomerType": custType}),
+			dataType: "json",
+			contentType: "application/json; charset=utf-8",
+			success: function (result) {
+				setTimeout(function () {
+					$.preloader.stop();
+					msgNotify('Success', result.responseText, 'success');
+				}, 700);
+			},
+			error: function (result) {
+				$.preloader.stop();
+				alert("Wrong == " + result);
+			}
+
+		});
+	}
+
+</script>

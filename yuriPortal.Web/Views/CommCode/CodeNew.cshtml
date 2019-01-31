@@ -25,7 +25,6 @@
 
 			$('#mySpinner').addClass('spinner');
 			var CodeGroupID = $("#CodeGroupID").val();
-			var codeId		= $("#txtCodeId").val();
 			var codeName	= $("#txtCodeName").val();
 			var codeValue	= $("#txtCodeValue").val();
 			var codeDesc	= $("#txtDesc").val();
@@ -33,7 +32,7 @@
                 $.ajax({
                     url: '@Url.Action("SaveCode", "CommCode")',
                         type: 'POST',
-						data: JSON.stringify({ "CodeGroupID": CodeGroupID, "Code_ID": codeId, "Code_Name": codeName, "Code_Value": codeValue, "Description": codeDesc }),
+						data: JSON.stringify({ "CodeGroupID": CodeGroupID, "Code_Name": codeName, "Code_Value": codeValue, "Description": codeDesc }),
                         dataType: "json",
                         contentType: "application/json; charset=utf-8",
 					success: function (result) {
@@ -82,13 +81,13 @@
 					</div>
 				</div>
 
-				<div class="form-group">
+				@*<div class="form-group">
 					<label class="col-md-3 control-label" for="inputDefault">Code ID</label>
 					<div class="col-md-9">
 						@Html.EditorFor(model => model.Code_ID, new { htmlAttributes = new { @class = "form-control", @id = "txtCodeId" } })
 						@Html.ValidationMessageFor(model => model.Code_ID, "", new { @class = "text-danger" })
 					</div>
-				</div>
+				</div>*@
 
 				<div class="form-group">
 					<label class="col-md-3 control-label" for="inputDefault">Code Name</label>

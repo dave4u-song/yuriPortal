@@ -1,0 +1,408 @@
+﻿@{
+	Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<script>
+	$(document).ready(function () {
+		$("#tabUser").click(function () {
+			console.log();
+		});
+
+		$('#treeView').jstree({
+			'core': {
+				'check_callback': true,
+				'themes': {
+					'responsive': false
+				},
+				'data': {
+					'url': function (node) {
+						return node.id === '#' ? "/Menu/GetChildren" : "/Menu/GetChildren/" + node.id;
+
+					},
+					'data': function (node) {
+						console.log(node.id);
+						return { 'id': node.id };
+					}
+				}
+			},
+			'types': {
+				'default': {
+					'icon': 'fa fa-folder'
+				},
+				'file': {
+					'icon': 'fa fa-file'
+				}
+			},
+			"contextmenu": {
+				"items": function ($node) {
+					return {
+						"Create": {
+							"label": "create new",
+							"action": function (data) {
+								var ref = $.jstree.reference(data.reference);
+								sel = ref.get_selected();
+								if (!sel.length) { return false; }
+								sel = sel[0];
+								sel = ref.create_node(sel, { "type": "file" });
+								if (sel) {
+									ref.edit(sel);
+								}
+							}
+						},
+						"Remove": {
+							"label": "delete",
+							"action": function (data) {
+								var ref = $.jstree.reference(data.reference),
+									sel = ref.get_selected();
+								if (!sel.length) { return false; }
+								ref.delete_node(sel);
+
+							}
+						}
+					};
+				}
+			},
+			'plugins': ['types']
+			//'plugins': ['types','contextmenu']
+		});
+
+
+		$('#treeView')
+			.on('delete_node.jstree', function (e, data) {
+				$.get('?operation=delete_node', { 'id': data.node.id })
+					.fail(function () {
+						data.instance.refresh();
+					});
+			})
+			.on('create_node.jstree', function (e, data) {
+				$.get('?operation=create_node', { 'id': data.node.parent, 'position': data.position, 'text': data.node.text })
+					.done(function (d) {
+						console.log("create_node");
+						data.instance.set_id(data.node, d.id);
+					})
+					.fail(function () {
+						data.instance.refresh();
+					});
+			})
+			.on('changed.jstree', function (e, data) {
+				var i, j, r = [];
+				for (i = 0, j = data.selected.length; i < j; i++) {
+					r.push(data.instance.get_node(data.selected[i]).id);
+				}
+
+				var selectedVal = r.join(', ');
+
+				if (selectedVal !== "undefined") {
+					viewMenuDetail(r.join(', '));
+				} else {
+					resetDataField();
+				}
+
+			})
+			.jstree();
+
+
+		$('#btnFindApps').click(function () {
+			var url = "/Menu/FindApps";
+			OpenPopupWithPage(url);
+		});
+
+
+		$("#Menuform").validate({
+			rules: {
+				MenuId: {
+					required: true,
+					minlength: 8
+				},
+				MenuName: {
+					required: true,
+					minlength: 3
+				},
+				OrderNo: "required",
+				ParentMenuId: "required",
+				ViewPathName: "required"
+			},
+			messages: {
+				MenuId: {
+					required: "Please provide the menu id",
+					minlength: "Your password must be at least 8 characters long"
+				},
+				MenuName: {
+					required: "Please provide the menu name",
+					minlength: "Your password must be at least 3 characters long"
+				},
+				OrderNo: "Please enter order number",
+				ParentMenuId: "Please enter the parent menu id",
+				ViewPathName: "Please select the link page"
+			},
+			//errorElement: "em",
+			errorPlacement: function (error, element) {
+				var placement = element.closest('.input-group');
+				if (!placement.get(0)) {
+					placement = element;
+				}
+				if (error.text() !== '') {
+					placement.after(error);
+				}
+			},
+			highlight: function (label) {
+				$(label).closest('.form-group').removeClass('has-success').addClass('has-error');
+			},
+			unhighlight: function (label) {
+				$(label).closest('.form-group').addClass('has-success').removeClass('has-error');
+			},
+			submitHandler: function (form) {
+				SaveMenuInfo();
+			}
+		});
+
+	});
+
+
+	function SaveMenuInfo() {
+		$.preloader.start({
+			modal: true
+		});
+
+		var MenuId = $("#txtMenuId").val();
+		var MenuName = $("#txtMenuName").val();
+		var OrderNo = $("#txtOrderNo").val();
+		var ParentMenuId = $("#txtParentMenuId").val();
+		var AppPathId = $("#hidAppPathId").val();
+		var MenuLevel = $("#hidMenuLevel").val();
+
+		var url = "";
+		console.log(AppPathId);
+		if (MenuId === undefined)
+			url = "/Menu/SaveMenu";
+		else
+			url = "/Menu/UpdateMenu";
+
+		$.ajax({
+			url: url,
+			type: 'POST',
+			data: JSON.stringify({ "MenuId": MenuId, "MenuName": MenuName, "MenuLevel": MenuLevel, "OrderNo": OrderNo, "ParentMenuId": ParentMenuId, "AppPathId": AppPathId }),
+			dataType: "json",
+			contentType: "application/json; charset=utf-8",
+			success: function (result) {
+				setTimeout(function () {
+					$.preloader.stop();
+					msgNotify('Success', result.responseText, 'success');
+				}, 700);
+			},
+			error: function (result) {
+				$.preloader.stop();
+				alert("Wrong == " + result);
+			}
+
+		});
+	}
+
+	function customMenu(node) {
+		// The default set of all items
+		var items = {
+			renameItem: {
+				label: "Create",
+				action: function () {
+					alert(0);
+				}
+			},
+			deleteItem: {
+				label: "Delete",
+				action: function () {
+					alert(2);
+				}
+			}
+		};
+
+		if ($(node).hasClass("folder")) {
+			// Delete the "delete" menu item
+			delete items.deleteItem;
+		}
+
+		return items;
+	}
+
+	function resetDataField() {
+		$('#txtMenuId').val("");
+		$('#txtMenuName').val("");
+		$('#txtOrderNo').val("");
+		$('#txtParentMenuId').val("");
+		$('#txtViewPathName').val("");
+		$('#hidAppPathId').val("");
+	}
+
+	function viewMenuDetail(id) {
+		if (id != "") {
+			$.ajax({
+				url: '/Menu/GetMenuInfo/' + id,
+				dataType: "json",
+				type: "POST",
+				contentType: "application/json; charset=utf-8",
+				dataType: "json",
+				success: function (response) {
+					if (response != null) {
+
+						//console.log(response);
+						$('#txtMenuId').val(response.MenuId);
+						$('#txtMenuName').val(response.MenuName);
+						$('#txtOrderNo').val(response.OrderNo);
+						$('#txtParentMenuId').val(response.ParentMenuId);
+						$('#txtViewPathName').val(response.PagePath);
+						$('#hidAppPathId').val(response.AppPathId);
+					} else {
+						alert("Something went wrong");
+					}
+				},
+				failure: function (response) {
+					alert(response.responseText);
+				},
+				error: function (response) {
+					alert(response.responseText);
+				}
+			});
+
+		}
+	}
+
+	function SelectAppPath(AppsPathId, AppPathName, PagePath) {
+		$('#txtViewPathName').val(AppPathName + " : " + PagePath);
+		$('#hidAppPathId').val(AppsPathId);
+	}
+
+	function AddMenuInfo() {
+		console.log("Add Menu");
+	}
+
+	function UpdateMenuInfo() {
+		console.log("Update Menu");
+	}
+
+	function CallTabRoleMap() {
+
+		var txtHtml = $("#TabRoleMap").html().trim();
+		var roleid = "";
+		if (txtHtml == "") {
+			$("#TabRoleMap").load("@Url.Action("ManageRoleMap","Menu")", { 'roleid' : roleid }, 
+			function (response, status, xhr)
+			{
+				if (status == "error")
+				{
+					alert("An error occurred while loading the results.");
+				}
+			});
+		}
+	}
+</script>
+
+<div class="row">
+	<div class="col-md-6 col-lg-3">
+		<section class="panel">
+			<div class="panel-body">
+				<h5 class="text-semibold text-dark text-uppercase">Menu</h5>
+				<div id="treeView">
+
+				</div>
+			</div>
+			<div class="panel-footer">
+				<div class="row">
+					<div class="col-md-6">
+						<button type="button" class="btn btn-primary" id="btnAddMenu" onclick="AddMenuInfo();">Add Menu</button>
+						@*<button type="reset" class="btn btn-default">Reset</button>*@
+					</div>
+				</div>
+			</div>
+		</section>
+	</div>
+
+	<div class="col-md-6 col-lg-9">
+		<div class="tabs">
+			<ul class="nav nav-tabs tabs-primary">
+				<li class="active">
+					<a href="#update" data-toggle="tab">Menu Information</a>
+				</li>
+				<li>
+					<a href="#TabRoleMap" onclick="CallTabRoleMap();" data-toggle="tab">Role Mapping</a>
+				</li>
+				<li>
+					<a href="#TabUserMap" id="tabUser" data-toggle="tab">User Mapping</a>
+				</li>
+			</ul>
+
+			<div class="tab-content">
+				<div id="update" class="tab-pane active">
+					<form id="Menuform" class="form-horizontal" method="post">
+						<h5 class="text-semibold text-dark text-uppercase">Menu Information</h5>
+						<fieldset>
+							<div class="form-group">
+								<label class="col-sm-3 control-label" for="MenuId">Menu Id <span class="required">*</span></label>
+								<div class="col-sm-9">
+									<input type="text" class="form-control" id="txtMenuId" name="MenuId" />
+									<input type="hidden" class="form-control" id="hidMenuLevel">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label" for="MenuName">Menu Name <span class="required">*</span></label>
+								<div class="col-sm-9">
+									<input type="text" name="MenuName" class="form-control" id="txtMenuName" />
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label class="col-sm-3 control-label" for="OrderNo">Order Number <span class="required">*</span></label>
+								<div class="col-sm-9">
+									<input type="text" name="OrderNo" class="form-control" id="txtOrderNo" />
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label class="col-sm-3 control-label" for="ParentMenuId">Parent Menu <span class="required">*</span></label>
+								<div class="col-sm-9">
+									<input type="text" name="ParentMenuId" class="form-control" id="txtParentMenuId" readonly="readonly" />
+								</div>
+							</div>
+
+							@*<div class="form-group">
+									<label class="col-sm-3 control-label">App Path</label>
+									<div class="col-sm-9">
+										<input type="text" name="AppPathId" class="form-control" id="AppPathId" />
+									</div>
+								</div>*@
+
+							<div class="form-group">
+								<label class="col-md-3 control-label" for="ViewPathName">App Path <span class="required">*</span></label>
+								<div class="col-md-9">
+									<div class="input-group mb-md">
+										<input type="text" class="form-control" id="txtViewPathName" name="ViewPathName" readonly="readonly">
+										<input type="hidden" class="form-control" id="hidAppPathId">
+										<span class="input-group-btn">
+											<button class="btn btn-success" type="button" id="btnFindApps">Find</button>
+										</span>
+									</div>
+								</div>
+							</div>
+
+						</fieldset>
+						<div class="panel-footer">
+							<div class="row">
+								<div class="col-md-9 col-md-offset-3">
+									<button type="submit" class="btn btn-primary" id="btnSave">Save</button>
+									@*<button type="reset" class="btn btn-default">Reset</button>*@
+								</div>
+							</div>
+						</div>
+
+					</form>
+				</div>
+				<div id="TabRoleMap" class="tab-pane">
+
+				</div>
+				<div id="TabUserMap" class="tab-pane">
+
+				</div>
+			</div>
+
+		</div>
+
+	</div>
+</div>

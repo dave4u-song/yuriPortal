@@ -1,0 +1,125 @@
+﻿
+@using Microsoft.AspNet.Identity;
+@using yuriPortal.Web.Helper
+@model IEnumerable<yuriPortal.Data.Models.AppPath>
+
+<div id="custom-content" class="modal-block modal-block-md">
+
+	<section class="panel" id="mySpinner">
+		<header class="panel-heading">
+			<div class="panel-actions">
+				<a href="#" class="fa fa-times modal-dismiss" data-dismiss="modal"></a>
+			</div>
+			<h2 class="panel-title">Find Apps</h2>
+		</header>
+
+		<div class="panel-body">
+			<div class="form-group">
+				<div class="col-md-12">
+					<div class="input-group input-search">
+						<input type="text" class="form-control" id="txtSearch" placeholder="Search...">
+						<span class="input-group-btn">
+							<button class="btn btn-default" id="btnSearch" type="button"><i class="fa fa-search"></i></button>
+						</span>
+					</div>
+				</div>
+
+			</div>
+
+			<div class="table-responsive" id="divList">
+				<table class="table table-bordered table-striped table-condensed mb-none">
+					<thead>
+						<tr>
+							<th class="text-center">App Name</th>
+							<th class="text-center">Path</th>
+						</tr>
+					</thead>
+
+					<tbody id="ContentList"></tbody>
+
+				</table>
+
+			</div>
+
+			<div id="pagingArea">
+
+			</div>
+		</div>
+
+
+
+		<footer class="panel-footer">
+			<div class="row">
+				<div class="col-md-12 text-right">
+					<button type="button" class="btn btn-default modal-dismiss" data-dismiss="modal" id="btnClose">Close</button>
+				</div>
+			</div>
+		</footer>
+	</section>
+
+</div>
+
+
+
+
+
+
+<script type="text/javascript">
+
+	$(document).ready(function () {
+
+		$("#btnSearch").click(function () {
+			BindDataToList(1, 15);
+		});
+
+		$('#txtSearch').keypress(function (e) {
+			var key = e.which;
+			if (key == 13)  // the enter key code
+			{
+				$("#btnSearch").click();
+				return false;
+			}
+		});
+
+	});
+
+	function SelectApp(AppsPathId, AppPathName, PagePath) {
+		$('#txtViewPathName').val(AppPathName + " : " + PagePath);
+		$('#txtViewPathName').val(PagePath);
+		$('#hidAppPathId').val(AppsPathId);
+
+		$("#btnClose").click();
+	}
+
+	function afterSave() {
+		BindDataToList(1, 15);
+	}
+
+
+	function BindDataToList(pageNum, pageSize) {
+
+		$("#ContentList").empty();
+		$("#pagingArea").empty();
+
+		var searchValue = $("#txtSearch").val();
+
+		$.getJSON("/Menu/GetAppspath", { pageNumber: pageNum, pageSize: pageSize, seachText: searchValue }, function (response) {
+			console.log(response);
+			var rowData = "";
+			if (response.Data.length > 0) {
+				for (var i = 0; i < response.Data.length; i++) {
+					rowData = rowData + '<tr id="row' + i.toString() + '">';
+					rowData = rowData + '<td><a href="#" onclick="SelectApp(\'' + response.Data[i].AppPathId + '\',\'' + response.Data[i].AppPathName + '\',\'' + response.Data[i].PagePath + '\');">' + response.Data[i].AppPathName + '</a></td>';
+					rowData = rowData + '<td><a href="#" onclick="SelectApp(\'' + response.Data[i].AppPathId + '\',\'' + response.Data[i].AppPathName + '\',\'' + response.Data[i].PagePath + '\');">' + response.Data[i].PagePath + '</a></td>';
+					rowData = rowData + '</tr>';
+				}
+			}
+			else {
+				rowData = '<tr><td colspan="5" class="text-center">No data found</td></tr>';
+			}
+
+			$("#ContentList").append(rowData);
+			SetPageNavigation(response.TotalPages, response.CurrentPage, response.PageSize);
+		});
+	}
+</script>

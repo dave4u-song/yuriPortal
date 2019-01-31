@@ -6,34 +6,39 @@
 	{
 		@Html.AntiForgeryToken()
 
-		<div class=" header-right">
-			<span class="separator"></span>
-			<div id="userbox" class="userbox">
-				<a href="#" data-toggle="dropdown">
-					<figure class="profile-picture">
-						<img src="~/files/userpic/1.jpg" alt="Joseph Doe" class="img-circle" data-lock-picture="/Images/!logged-user.jpg" />
-					</figure>
-					<div class="profile-info" data-lock-name="User.Identity.GetUserName()" data-lock-email="User.Identity.GetUserName()">
-						<span class="name">@User.Identity.GetUserName()</span>
-						@*span class="role">administrator</span>*@
-					</div>
+<div class=" header-right">
 
-					<i class="fa custom-caret"></i>
-				</a>
 
-				<div class="dropdown-menu">
-					<ul class="list-unstyled">
-						<li class="divider"></li>
-						<li>
-							<a role="menuitem" tabindex="-1" href="/User/UserDetail/?userNm=@User.Identity.GetUserName()"><i class="fa fa-user"></i> My Profile</a>
-						</li>
-						<li>
-							<a role="menuitem" tabindex="-1" href="javascript:document.getElementById('logoutForm').submit()"><i class="fa fa-power-off"></i> Logout</a>
-						</li>
-					</ul>
-				</div>
+
+
+
+	<span class="separator"></span>
+	<div id="userbox" class="userbox">
+		<a href="#" data-toggle="dropdown">
+			<figure class="profile-picture">
+				<img src="~/files/userpic/1.jpg" alt="Joseph Doe" class="img-circle" data-lock-picture="/Images/!logged-user.jpg" />
+			</figure>
+			<div class="profile-info" data-lock-name="User.Identity.GetUserName()" data-lock-email="User.Identity.GetUserName()">
+				<span class="name">@User.Identity.GetUserName()</span>
+				@*span class="role">administrator</span>*@
 			</div>
+
+			<i class="fa custom-caret"></i>
+		</a>
+
+		<div class="dropdown-menu">
+			<ul class="list-unstyled">
+				<li class="divider"></li>
+				<li>
+					<a role="menuitem" tabindex="-1" href="/User/UserDetail/?userNm=@User.Identity.GetUserName()"><i class="fa fa-user"></i> My Profile</a>
+				</li>
+				<li>
+					<a role="menuitem" tabindex="-1" href="javascript:document.getElementById('logoutForm').submit()"><i class="fa fa-power-off"></i> Logout</a>
+				</li>
+			</ul>
 		</div>
+	</div>
+</div>																	
 	}
 }
 else

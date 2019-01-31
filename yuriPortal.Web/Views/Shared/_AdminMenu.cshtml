@@ -1,0 +1,187 @@
+﻿@using yuriPortal.Web.Helper
+@model IEnumerable<yuriPortal.Data.ViewModel.MenuViewModel>
+
+<script type="text/javascript">
+
+	$(document).ready(function () {
+
+
+		$.ajax({
+			url: "/Home/GetAdminMenuList",
+			type: 'POST',
+			data: JSON.stringify({ "MenuType": "Admin" }),
+			dataType: "json",
+			contentType: "application/json; charset=utf-8",
+			success: function (data) {
+				//console.log(data);
+				var obj = data,
+					ul = $("<ul>");
+					ul.addClass("nav nav-main");
+
+				for (var i = 0, l = obj.length; i < l; ++i) {
+					//console.log(obj[i].children);
+					if (obj[i].children) {
+
+						ul.append("<li class='nav-parent'>");
+
+						var sub_a = $("<a>");
+						//ui.append("<a>");
+
+						//ui.append("<i class='fa fa-comment' aria-hidden='true'></i>");
+						//ui.append("<span>" + obj[i].text + "</span>");
+						//ui.append("</a>");
+
+						//ui.append("<ul class='nav nav-children'>");
+
+						for (var k = 0; i < obj[i].children.length; ++k) {
+
+							ui.append("<li><a href='" + obj[i].childrens[k].path + "'>" + obj[i].childrens[k].text + "</a></li>");
+						}
+
+						//ui.append("</ul>");
+						//ul.append("</li>");
+					}
+					else {
+
+						//ul.append("<li><a href='" + obj[i].path + "'>");
+						//ul.append("<i class='fa fa-info' aria-hidden='true'></i>");
+						//ul.append("<span>" + obj[i].text + "</span>");
+						//ul.append("</a>");
+						//ul.append("</li>");
+					}
+
+					
+				}
+
+				ul.append("</ui>");
+
+				//console.log(String(ul));
+				//$("#menu2").append(ul);
+			}
+		});
+
+
+	});
+
+</script>
+<nav id="menu2" class="nav-main" role="navigation">
+</nav>
+<nav id="menu" class="nav-main" role="navigation">
+	<ul class="nav nav-main">
+		<li class="nav-parent">
+			<a>
+				<i class="fa fa-user" aria-hidden="true"></i>
+				<span>User Mangement</span>
+			</a>
+			<ul class="nav nav-children">
+				<li>
+					<a href="/User/Index">
+						User List
+					</a>
+				</li>
+				<li>
+					<a href="/User/RoleList">
+						Role List
+					</a>
+				</li>
+			</ul>
+		</li>
+
+		<li>
+			<a href="/Customer/Index">
+				<i class="fa fa-info" aria-hidden="true"></i>
+				<span>Customer Mangement</span>
+			</a>
+		</li>
+
+		<li>
+			<a href="/Calendar/Index">
+				<i class="fa fa-info" aria-hidden="true"></i>
+				<span>Calendar</span>
+			</a>
+		</li>
+
+		<li class="nav-parent">
+			<a>
+				<i class="fa fa-comment" aria-hidden="true"></i>
+				<span>Board Management</span>
+			</a>
+			<ul class="nav nav-children">
+				<li>
+					<a href="/Board/Index">
+						Board List
+					</a>
+				</li>
+				<li>
+					<a href="/Post/Index">
+						Article List
+					</a>
+				</li>
+			</ul>
+		</li>
+
+		<li class="nav-parent">
+			<a>
+				<i class="fa fa-cab" aria-hidden="true"></i>
+				<span>Service & Product</span>
+			</a>
+			<ul class="nav nav-children">
+				<li>
+					<a href="/Survey">
+						Service Management
+					</a>
+				</li>
+				<li>
+					<a href="/Survey">
+						Product Management
+					</a>
+				</li>
+			</ul>
+		</li>
+
+		<li class="nav-parent">
+			<a>
+				<i class="fa fa-folder" aria-hidden="true"></i>
+				<span>Manu & Apps</span>
+			</a>
+			<ul class="nav nav-children">
+				<li>
+					<a href="/Menu">
+						Manu Mangement
+					</a>
+				</li>
+				<li>
+					<a href="/Menu/AppsList">
+						Apps Mangement
+					</a>
+				</li>
+			</ul>
+		</li>
+
+		<li class="nav-parent">
+			<a>
+				<i class="fa fa-folder" aria-hidden="true"></i>
+				<span>Code Mangement</span>
+			</a>
+			<ul class="nav nav-children">
+				<li>
+					<a href="/CommCode/Index">
+						Global Code
+					</a>
+				</li>
+				<li>
+					<a href="/HireCode/Index">
+						Hirerarchy Code
+					</a>
+				</li>
+			</ul>
+		</li>
+
+		<li>
+			<a href="/Lang/Index">
+				<i class="fa fa-language" aria-hidden="true"></i>
+				<span>Language</span>
+			</a>
+		</li>
+	</ul>
+</nav>

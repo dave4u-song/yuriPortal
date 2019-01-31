@@ -88,6 +88,26 @@ namespace yuriPortal.Core.Repository
 			return viweModel;
 		}
 
+
+		public void UpdateUserProfile(UserSaveViewModel userInfo)
+		{
+			var item = context.UserProfiles.Where(x => x.UserId == userInfo.UserId).Single();
+
+			item.FirstName = userInfo.FirstName;
+			item.LastName = userInfo.LastName;
+			item.Street = userInfo.AddressStreet;
+			item.City = userInfo.AddressCity;
+
+			item.Province = userInfo.AddressProvince;
+			item.Country = userInfo.AddressCountry;
+
+			item.PostalCode = userInfo.PostalCode;
+			item.Gender = userInfo.Gender;
+			item.LanguageCd = userInfo.Language;
+
+			context.SaveChanges();
+		}
+
 		public void SaveUserProfile(string userId, UserSaveViewModel userInfo)
 		{
 			UserProfile userProfile = new UserProfile()

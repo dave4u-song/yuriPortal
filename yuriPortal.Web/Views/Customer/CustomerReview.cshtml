@@ -1,0 +1,74 @@
+﻿@using Microsoft.AspNet.Identity;
+@model yuriPortal.Data.ViewModel.CustomerViewModel
+
+<script type="text/javascript">
+
+
+	$(document).ready(function () {
+
+
+	});
+
+</script>
+
+
+<div id="custom-content" class="modal-block modal-block-md">
+
+	<section class="panel" id="mySpinner">
+		<header class="panel-heading">
+			<div class="panel-actions">
+				<a href="#" class="fa fa-times modal-dismiss" data-dismiss="modal"></a>
+			</div>
+			<h2 class="panel-title">Customer Information</h2>
+		</header>
+		<div class="panel-body">
+			<form class="form-horizontal form-bordered" method="post">
+				@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+				@Html.Hidden("CustomerId", Model.CustomerId)
+				<div class="form-group">
+					<label class="col-md-3 control-label" for="inputDefault">App Name</label>
+					<div class="col-md-9">
+						@Html.Raw(Model.CustomerName)
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-md-3 control-label" for="inputDefault">Path</label>
+					<div class="col-md-9">
+						@Html.Raw(Model.CustomerName)
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-md-3 control-label" for="inputDefault">Parameters</label>
+					<div class="col-md-9">
+						@Html.Raw(Model.CustomerName)
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-md-3 control-label" for="inputDisabled">Description</label>
+					<div class="col-md-9">
+						@Html.Raw(Model.CustomerName)
+					</div>
+				</div>
+			</form>
+		</div>
+
+		<footer class="panel-footer">
+			<div class="row">
+				<div class="col-md-12 text-right">
+					<button type="button" class="btn btn-default modal-dismiss" data-dismiss="modal" id="btnClose">Close</button>
+				</div>
+			</div>
+		</footer>
+	</section>
+
+</div>
+
+
+
+
+
+
+

@@ -57,7 +57,9 @@ namespace yuriPortal.Web
 			container.RegisterType<IBoardRepository, BoardRepository>();
 			container.RegisterType<IPostRepository, PostRepository>();
 			container.RegisterType<ILangRepository, LangRepository>();
-			
+			container.RegisterType<IMenuRepository, MenuRepository>();
+			container.RegisterType<ICustomerRepository, CustomerRepository>();
+
 
 			container.RegisterType<AccountController>(new InjectionConstructor());
 			container.RegisterType<RolesAdminController>(new InjectionConstructor());

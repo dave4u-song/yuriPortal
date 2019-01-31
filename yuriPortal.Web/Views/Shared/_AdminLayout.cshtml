@@ -6,10 +6,10 @@
 	<!-- Basic -->
 	<meta charset="UTF-8">
 
-	<title>Yuri Portal</title>
-	<meta name="keywords" content="Yuri Portal" />
-	<meta name="description" content="Yuri Contents Management System">
-	<meta name="author" content="Dave Song">
+	<title>Dave Ilkyu Song</title>
+	<meta name="keywords" content="SmartMerchant" />
+	<meta name="description" content="SmartMerchantm">
+	<meta name="author" content="SmartMerchant">
 
 	<!-- Mobile Metas -->
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -23,6 +23,10 @@
 	<link rel="stylesheet" href="/Scripts/summernote/summernote.css">
 	<link rel="stylesheet" href="/Scripts/summernote/summernote-bs3.css">
 	<link rel="stylesheet" href="/Scripts/pnotify/pnotify.custom.min.css">
+	<link rel="stylesheet" href="/Scripts/jstree/themes/default/style.css">
+	<link rel="stylesheet" href="/Scripts/fullcalendar/fullcalendar.css" />
+	<link rel="stylesheet" href="/Scripts/fullcalendar/fullcalendar.print.css" media="print" />
+
 
 	@Styles.Render("~/Css/theme")
 
@@ -35,6 +39,7 @@
 
 
 	<script src="/Scripts/jquery/jquery.js"></script>
+	<script src="~/Scripts/jquery-preloader/jquery.preloaders.js"></script>
 	@*<script src="/Scripts/drop/dropzone.js"></script>
 		<script>Dropzone.autoDiscover = false;</script>*@
 </head>
@@ -45,14 +50,14 @@
 		<header class="header">
 			<div class="logo-container">
 				<a href="../" class="logo">
-					<img src="/Images/logo3.png" height="35" alt="Porto Admin" />
+					<img src="~/Images/Logo3.png" height="35" alt="Porto Admin" />
 				</a>
 				<div class="visible-xs toggle-sidebar-left" data-toggle-class="sidebar-left-opened" data-target="html" data-fire-event="sidebar-left-opened">
 					<i class="fa fa-bars" aria-label="Toggle sidebar"></i>
 				</div>
 			</div>
 
-			@{ Html.RenderAction("GetMenuList", "Home"); }
+			@*@{ Html.RenderAction("GetMenuList", "Home"); }*@
 			@Html.Partial("_LoginPartial")
 		</header>
 		<!-- end: header -->
@@ -72,88 +77,8 @@
 
 				<div class="nano">
 					<div class="nano-content">
-						<nav id="menu" class="nav-main" role="navigation">
-							<ul class="nav nav-main">
-								<li>
-									<a href="/User/Index">
-										<i class="fa fa-user" aria-hidden="true"></i>
-										<span>User Mangement</span>
-									</a>
-								</li>
 
-								<li class="nav-parent">
-									<a>
-										<i class="fa fa-comment" aria-hidden="true"></i>
-										<span>Board Management</span>
-									</a>
-									<ul class="nav nav-children">
-										<li>
-											<a href="/Board/Index">
-												Board List
-											</a>
-										</li>
-										<li>
-											<a href="/Post/Index">
-												Article List
-											</a>
-										</li>
-									</ul>
-								</li>
-
-								<li class="nav-parent">
-									<a>
-										<i class="fa fa-cab" aria-hidden="true"></i>
-										<span>Survey Mangement</span>
-									</a>
-									<ul class="nav nav-children">
-										<li>
-											<a href="pages-signup.html">
-												Survey Question
-											</a>
-										</li>
-										<li>
-											<a href="pages-signin.html">
-												Survey Answer
-											</a>
-										</li>
-									</ul>
-								</li>
-
-								<li class="nav-parent">
-									<a>
-										<i class="fa fa-folder" aria-hidden="true"></i>
-										<span>Manu & Apps</span>
-									</a>
-									<ul class="nav nav-children">
-										<li>
-											<a href="pages-signup.html">
-												Manu Mangement
-											</a>
-										</li>
-										<li>
-											<a href="pages-signin.html">
-												Apps Mangement
-											</a>
-										</li>
-									</ul>
-								</li>
-
-								<li>
-									<a href="/CommCode/Index">
-										<i class="fa fa-info" aria-hidden="true"></i>
-										<span>Code Mangement</span>
-									</a>
-								</li>
-
-								<li>
-									<a href="/Lang/Index">
-										<i class="fa fa-language" aria-hidden="true"></i>
-										<span>Language</span>
-									</a>
-								</li>
-
-							</ul>
-						</nav>
+						@{ Html.RenderAction("AdminMenu", "Home"); }
 
 						<hr class="separator" />
 					</div>
@@ -165,7 +90,7 @@
 
 			<section role="main" class="content-body">
 				<header class="page-header">
-					<h2>Blank Page</h2>
+					<h2>Page</h2>
 
 					<div class="right-wrapper pull-right">
 						<ol class="breadcrumbs">
@@ -175,7 +100,7 @@
 								</a>
 							</li>
 							<li><span>Pages</span></li>
-							<li><span>Blank Page &nbsp;&nbsp;</span><span> </span></li>
+							<li><span>Page &nbsp;&nbsp;</span><span> </span></li>
 						</ol>
 					</div>
 				</header>
@@ -197,15 +122,18 @@
 	<script src="/Content/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
 	<script src="/Content/magnific-popup/magnific-popup.js"></script>
 	<script src="/Scripts/jquery-placeholder/jquery.placeholder.js"></script>
+
 	<script src="/Scripts/jquery-autosize/jquery.autosize.js"></script>
 	<script src="/Scripts/bootstrap-fileupload/bootstrap-fileupload.min.js"></script>
-
+	<script src="~/Scripts/jstree/jstree.js"></script>
 
 	<script src="/Scripts/jquery-validation/jquery.validate.js"></script>
 	<script src="/Scripts/ios7-switch/ios7-switch.js"></script>
 	<script src="/Scripts/bootstrap-tagsinput/bootstrap-tagsinput.js"></script>
 	<script src="/Scripts/summernote/summernote.js"></script>
 	<script src="/Scripts/pnotify/pnotify.custom.min.js"></script>
+	<script src="/Scripts/fullcalendar/lib/moment.min.js"></script>
+	<script src="/Scripts/fullcalendar/fullcalendar.js"></script>
 
 	<script src="/javascripts/theme.js"></script>
 	<script src="/javascripts/theme.custom.js"></script>

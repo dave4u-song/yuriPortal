@@ -70,6 +70,25 @@ namespace yuriPortal.Web.Controllers
 			}
 		}
 
+		public ActionResult RoleList()
+		{
+			return PartialView("RoleList");
+		}
+
+
+		public ActionResult GetRoleList(int pageNumber = 1, int pageSize = 15, string searchText = null)
+		{
+			try
+			{
+				var pagedData = Pagination.PagedResult(dbUser.GetUsers(searchText), pageNumber, pageSize);
+				return Json(pagedData, JsonRequestBehavior.AllowGet);
+			}
+			catch (Exception ex)
+			{
+				var error = ex.Message.ToString();
+				return Json(new { success = false, SaveError = "Error" }, JsonRequestBehavior.AllowGet);
+			}
+		}
 
 		public ActionResult UserCreate()
 		{
@@ -109,6 +128,22 @@ namespace yuriPortal.Web.Controllers
 
 		}
 
+		public JsonResult UpdateUserProfile(UserSaveViewModel userInfo)
+		{
+
+			try
+			{
+				// TODO: Add insert logic here
+				dbUser.UpdateUserProfile(userInfo);
+
+				return Json(new { success = true, responseText = "The user is successfuly updated!" }, JsonRequestBehavior.AllowGet);
+			}
+			catch (Exception ex)
+			{
+				var error = ex.Message.ToString();
+				return Json(new { success = false, SaveError = "Error" }, JsonRequestBehavior.AllowGet);
+			}
+		}
 
 		[HttpPost]
 		[AllowAnonymous]

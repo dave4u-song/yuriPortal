@@ -1,0 +1,122 @@
+﻿@{
+	Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+@using yuriPortal.Web.Helper
+@model IEnumerable<yuriPortal.Data.Models.AppPath>
+
+<section class="panel">
+	<div class="form-group">
+		<div class="row">
+			<div class="col-md-8">
+				<button type="button" class="btn btn-primary" onclick="AddApps();">Create Apps</button>
+			</div>
+
+			<div class="col-md-4 text-md-right">
+				<div class="input-group">
+					<input type="text" class="form-control" id="txtSearch">
+					<span class="input-group-btn">
+						<button class="btn btn-primary" type="button" id="btnSearch">Search</button>
+					</span>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<div class="panel-body">
+		<div class="table-responsive" id="divList">
+			<table class="table table-bordered table-striped table-condensed mb-none">
+				<thead>
+					<tr>
+						<th class="text-center">App Name</th>
+						<th class="text-center">Path</th>
+						<th class="text-center">Parameters</th>
+						<th class="text-center">Status</th>
+						<th class="text-center">Creater</th>
+					</tr>
+				</thead>
+
+				<tbody id="ContentList"></tbody>
+
+			</table>
+
+		</div>
+
+
+	</div>
+
+
+	<div id="pagingArea">
+
+	</div>
+
+</section>
+
+
+<script type="text/javascript">
+
+	$(document).ready(function () {
+
+		BindDataToList(1, 15);
+
+		$("#btnSearch").click(function () {
+			BindDataToList(1, 15);
+		});
+
+		$('#txtSearch').keypress(function (e) {
+			var key = e.which;
+			if (key == 13)  // the enter key code
+			{
+				$("#btnSearch").click();
+				return false;
+			}
+		});
+
+	});
+
+	function AddApps(AppsPathId) {
+
+		var url = "";
+		if (AppsPathId === undefined)
+			url = "/Menu/CreateApps";
+		else
+			url = "/Menu/ViewApps/?AppsPathId=" + AppsPathId;
+
+		OpenPopupWithPage(url);
+	}
+
+	function afterSave() {
+		BindDataToList(1, 15);
+	}
+
+
+	function BindDataToList(pageNum, pageSize) {
+
+		$("#ContentList").empty();
+		$("#pagingArea").empty();
+
+		var searchValue = $("#txtSearch").val();
+
+		$.getJSON("/Menu/GetAppspath", { pageNumber: pageNum, pageSize: pageSize, seachText: searchValue }, function (response) {
+			console.log(response);
+			var rowData = "";
+			if (response.Data.length > 0) {
+				for (var i = 0; i < response.Data.length; i++) {
+					rowData = rowData + '<tr id="row' + i.toString() + '">';
+					rowData = rowData + '<td><a href="#" onclick="AddApps(\'' + response.Data[i].AppPathId + '\');">' + response.Data[i].AppPathName + '</a></td>';
+					rowData = rowData + '<td><a href="#" onclick="AddApps(\'' + response.Data[i].AppPathId + '\');">' + response.Data[i].PagePath + '</a></td>';
+					rowData = rowData + '<td>' + response.Data[i].Parameters + '</td>';
+					rowData = rowData + '<td>' + response.Data[i].IsDelete + '</td>';
+					rowData = rowData + '<td>' + response.Data[i].FullUserName + '</td>';
+					rowData = rowData + '</tr>';
+				}
+			}
+			else {
+				rowData = '<tr><td colspan="5" class="text-center">No data found</td></tr>';
+			}
+
+			$("#ContentList").append(rowData);
+			SetPageNavigation(response.TotalPages, response.CurrentPage, response.PageSize, response.TotalCount);
+		});
+	}
+</script>

@@ -131,18 +131,23 @@
 
 			var rowData = "";
 
-			for (var i = 0; i < response.Data.length; i++) {
-				rowData = rowData + '<tr id="row' + i.toString() + '">';
-				rowData = rowData + '<td><a href="#" onclick="AddText(\'' + response.Data[i].LangId + '\');">' + response.Data[i].LangId + '</a></td>';
-				rowData = rowData + '<td><a href="#" onclick="AddText(\'' + response.Data[i].LangId + '\');">' + response.Data[i].DefaultText + '</a></td>';
-				rowData = rowData + '<td>' + response.Data[i].DefaultTrans + '</td>';
-				rowData = rowData + '<td>' + response.Data[i].LangCode + '</td>';
-				rowData = rowData + '<td>' + response.Data[i].LangTrans + '</td>';
-				rowData = rowData + '</tr>';
+			if (response.Data.length > 0) {
+				for (var i = 0; i < response.Data.length; i++) {
+					rowData = rowData + '<tr id="row' + i.toString() + '">';
+					rowData = rowData + '<td><a href="#" onclick="AddText(\'' + response.Data[i].LangId + '\');">' + response.Data[i].LangId + '</a></td>';
+					rowData = rowData + '<td><a href="#" onclick="AddText(\'' + response.Data[i].LangId + '\');">' + response.Data[i].DefaultText + '</a></td>';
+					rowData = rowData + '<td>' + response.Data[i].DefaultTrans + '</td>';
+					rowData = rowData + '<td>' + response.Data[i].LangCode + '</td>';
+					rowData = rowData + '<td>' + response.Data[i].LangTrans + '</td>';
+					rowData = rowData + '</tr>';
+				}
+			}
+			else {
+				rowData = '<tr><td colspan="5" class="text-center">No data found</td></tr>';
 			}
 
 			$("#ContentList").append(rowData);
-			SetPageNavigation(response.TotalPages, response.CurrentPage, response.PageSize);
+			SetPageNavigation(response.TotalPages, response.CurrentPage, response.PageSize, response.TotalCount);
 		});
 	}
 </script>

@@ -27,6 +27,16 @@ namespace yuriPortal.Core
 		public DbSet<BoardLike> BoardLikes { get; set; }
 		public DbSet<BoardAttach> BoardAttachs { get; set; }
 		public DbSet<Language> Languages { get; set; }
+		public DbSet<HierarchyCode> HierarchyCodes { get; set; }
+	
+		public DbSet<Customer> Customers { get; set; }
+		public DbSet<CustomerNote> CustomerNotes { get; set; }
+		public DbSet<CustTask> CustTasks { get; set; }
+		public DbSet<TaskAssigned> TaskAssigneds { get; set; }
+		public DbSet<TaskAttach> TaskAttachs { get; set; }
+
+
+
 
 		static ApplicationDbContext()
 		{

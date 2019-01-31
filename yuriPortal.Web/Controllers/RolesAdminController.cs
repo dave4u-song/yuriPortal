@@ -12,7 +12,7 @@ using yuriPortal.Data.Models;
 
 namespace yuriPortal.Web.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     public class RolesAdminController : Controller
     {
         public RolesAdminController()

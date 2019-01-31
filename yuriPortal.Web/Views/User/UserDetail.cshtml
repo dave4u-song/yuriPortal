@@ -38,6 +38,49 @@
 		});
 	});
 
+
+	function SaveUserDetail() {
+		$.preloader.start({
+			modal: true
+		});
+
+		var UserId = $("#hidUserName").val();
+		var firstname = $("#firstname").val();
+		var lastname = $("#lastname").val();
+		var email = $("#email").val();
+		var AddressStreet = $("#txtPhone").val();
+		var AddressStreet = $("#txtStreet").val();
+		var AddressCity = $("#txtCity").val();
+
+		var AddressProvince = $("#txtProvince").val();
+		var AddressCountry = $("#txtCountry").val();
+		var PostalCode = $("#txtPostalCd").val();
+
+		var Gender = $("#ddlGender option:selected").val();
+		var Language = $("#ddlLanguage option:selected").val();
+
+		var url = "/User/UpdateUserProfile";
+
+		$.ajax({
+			url: url,
+			type: 'POST',
+			data: JSON.stringify({ "UserId": UserId, "FirstName": firstname, "LastName": lastname, "email": email, "AddressStreet": AddressStreet, "AddressCity": AddressCity, "AddressProvince": AddressProvince, "AddressCountry": AddressCountry, "PostalCode": PostalCode, "Gender": Gender, "Language": Language }),
+			dataType: "json",
+			contentType: "application/json; charset=utf-8",
+			success: function (result) {
+				setTimeout(function () {
+					$.preloader.stop();
+					msgNotify('Success', result.responseText, 'success');
+				}, 700);
+			},
+			error: function (result) {
+				$.preloader.stop();
+				alert("Wrong == " + result);
+			}
+
+		});
+	}
+
 </script>
 
 <div class="row">
@@ -100,84 +143,6 @@
 			<div class="tab-content">
 				<div id="overview" class="tab-pane active">
 					<h4 class="mb-md">Analyze Access</h4>
-
-					<!-- bar charts group -->
-					<div class="col-md-6 col-sm-6 col-xs-12">
-						<div class="x_panel">
-							<div class="x_title">
-								<h2>Bar Chart Group <small>Sessions</small></h2>
-								<ul class="nav navbar-right panel_toolbox">
-									<li>
-										<a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-									</li>
-									<li class="dropdown">
-										<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
-										<ul class="dropdown-menu" role="menu">
-											<li>
-												<a href="#">Settings 1</a>
-											</li>
-											<li>
-												<a href="#">Settings 2</a>
-											</li>
-										</ul>
-									</li>
-									<li>
-										<a class="close-link"><i class="fa fa-close"></i></a>
-									</li>
-								</ul>
-								<div class="clearfix"></div>
-							</div>
-							<div class="x_content1">
-								<div id="graph_bar_group" style="width:100%; height:280px;"></div>
-							</div>
-						</div>
-					</div>
-					<div class="clearfix"></div>
-					<!-- /bar charts group -->
-
-					<h4 class="mb-xlg">Timeline</h4>
-
-					<div class="timeline timeline-simple mt-xlg mb-md">
-						<div class="tm-body">
-							<div class="tm-title">
-								<h3 class="h5 text-uppercase">November 2013</h3>
-							</div>
-							<ol class="tm-items">
-								<li>
-									<div class="tm-box">
-										<p class="text-muted mb-none">7 months ago.</p>
-										<p>
-											It's awesome when we find a good solution for our projects, Porto Admin is <span class="text-primary">#awesome</span>
-										</p>
-									</div>
-								</li>
-								<li>
-									<div class="tm-box">
-										<p class="text-muted mb-none">7 months ago.</p>
-										<p>
-											What is your biggest developer pain point?
-										</p>
-									</div>
-								</li>
-								<li>
-									<div class="tm-box">
-										<p class="text-muted mb-none">7 months ago.</p>
-										<p>
-											Checkout! How cool is that!
-										</p>
-										<div class="thumbnail-gallery">
-											<a class="img-thumbnail lightbox" href="/Images/projects/project-4.jpg" data-plugin-options='{ "type":"image" }'>
-												<img class="img-responsive" width="215" src="/Images/projects/project-4.jpg">
-												<span class="zoom">
-													<i class="fa fa-search"></i>
-												</span>
-											</a>
-										</div>
-									</div>
-								</li>
-							</ol>
-						</div>
-					</div>
 				</div>
 				<div id="edit" class="tab-pane">
 
@@ -187,13 +152,13 @@
 							<div class="form-group">
 								<label class="col-sm-3 control-label">First Name <span class="required">*</span></label>
 								<div class="col-sm-9">
-									<input type="text" name="firstname" class="form-control" id="firstname" />
+									<input type="text" name="firstname" class="form-control" id="firstname" value="@Html.Raw(Model.FirstName)"/>
 								</div>
 							</div>
 							<div class="form-group">
 								<label class="col-sm-3 control-label">Last Name <span class="required">*</span></label>
 								<div class="col-sm-9">
-									<input type="text" name="lastname" class="form-control" id="lastname" />
+									<input type="text" name="lastname" class="form-control" id="lastname" value="@Html.Raw(Model.LastName)"/>
 								</div>
 							</div>
 
@@ -204,7 +169,7 @@
 										<span class="input-group-addon">
 											<i class="fa fa-envelope"></i>
 										</span>
-										<input type="email" id="email" name="email" class="form-control" placeholder="dave4u.song@gmail.com" />
+										<input type="email" id="email" name="email" class="form-control" placeholder="dave4u.song@gmail.com"  value="@Html.Raw(Model.Email)" />
 									</div>
 								</div>
 								<div class="col-sm-9">
@@ -215,44 +180,44 @@
 							<div class="form-group">
 								<label class="col-sm-3 control-label">Phone Number</label>
 								<div class="col-sm-9">
-									<input type="url" name="phonenumber" class="form-control" id="txtPhone" />
+									<input type="text" name="phonenumber" class="form-control" id="txtPhone" value="@Html.Raw(Model.PhoneNumber)" />
 								</div>
 							</div>
 
 							<div class="form-group">
 								<label class="col-sm-3 control-label">Street</label>
 								<div class="col-sm-9">
-									<input type="text" name="Street" class="form-control" id="txtStreet" />
+									<input type="text" name="Street" class="form-control" id="txtStreet" value="@Html.Raw(Model.AddressStreet)" />
 								</div>
 							</div>
 							<div class="form-group">
 								<label class="col-sm-3 control-label">City</label>
 								<div class="col-sm-9">
-									<input type="text" name="City" class="form-control" id="txtCity" />
+									<input type="text" name="City" class="form-control" id="txtCity" value="@Html.Raw(Model.AddressCity)" />
 								</div>
 							</div>
 							<div class="form-group">
 								<label class="col-sm-3 control-label">Province</label>
 								<div class="col-sm-9">
-									<input type="text" name="Province" class="form-control" id="txtProvince" />
+									<input type="text" name="Province" class="form-control" id="txtProvince" value="@Html.Raw(Model.AddressProvince)" />
 								</div>
 							</div>
 							<div class="form-group">
 								<label class="col-sm-3 control-label">Country</label>
 								<div class="col-sm-9">
-									<input type="text" name="Country" class="form-control" id="txtCountry" />
+									<input type="text" name="Country" class="form-control" id="txtCountry" value="@Html.Raw(Model.AddressCountry)" />
 								</div>
 							</div>
 							<div class="form-group">
 								<label class="col-sm-3 control-label">Postal Code/ZIP</label>
 								<div class="col-sm-9">
-									<input type="text" name="PostalCode" class="form-control" id="txtPostalCd" />
+									<input type="text" name="PostalCode" class="form-control" id="txtPostalCd" value="@Html.Raw(Model.PostalCode)" />
 								</div>
 							</div>
 							<div class="form-group">
 								<label class="col-sm-3 control-label">Gender</label>
 								<div class="col-sm-9">
-									@Html.DropDownList("genderlist", CodeManager.getCodeListByGroup("GENDER"), null, new { @class = "form-control populate", @id = "ddlGender" })
+									@Html.DropDownList("genderlist", CodeManager.getCodeListByGroup("GENDER", Model.Gender), null, new { @class = "form-control populate", @id = "ddlGender" })
 									<label class="error" for="Gender"></label>
 								</div>
 							</div>
@@ -260,7 +225,7 @@
 							<div class="form-group">
 								<label class="col-sm-3 control-label">Language</label>
 								<div class="col-sm-9">
-									@Html.DropDownList("genderlist", CodeManager.getCodeListByGroup("LANGUAGE"), null, new { @class = "form-control populate", @id = "ddlLanguage" })
+									@Html.DropDownList("genderlist", CodeManager.getCodeListByGroup("LANGUAGE", Model.Language), null, new { @class = "form-control populate", @id = "ddlLanguage" })
 									<label class="error" for="Language"></label>
 								</div>
 							</div>
@@ -366,14 +331,6 @@
 			},
 			//errorElement: "em",
 			errorPlacement: function (error, element) {
-				// Add the `help-block` class to the error element
-				//error.addClass("help-block");
-
-				//if (element.prop("type") === "checkbox") {
-				//	error.insertAfter(element.parent("label"));
-				//} else {
-				//	error.insertAfter(element);
-				//}
 				var placement = element.closest('.input-group');
 				if (!placement.get(0)) {
 					placement = element;
@@ -383,12 +340,13 @@
 				}
 			},
 			highlight: function (label) {
-				//$(element).parents(".col-sm-5").addClass("has-error").removeClass("has-success");
 				$(label).closest('.form-group').removeClass('has-success').addClass('has-error');
 			},
 			unhighlight: function (label) {
-				//$(element).parents(".col-sm-5").addClass("has-success").removeClass("has-error");
 				$(label).closest('.form-group').addClass('has-success').removeClass('has-error');
+			},
+			submitHandler: function (form) {
+				SaveUserDetail();
 			}
 		});
 
@@ -425,14 +383,7 @@
 			},
 			//errorElement: "em",
 			errorPlacement: function (error, element) {
-				// Add the `help-block` class to the error element
-				//error.addClass("help-block");
 
-				//if (element.prop("type") === "checkbox") {
-				//	error.insertAfter(element.parent("label"));
-				//} else {
-				//	error.insertAfter(element);
-				//}
 				var placement = element.closest('.input-group');
 				if (!placement.get(0)) {
 					placement = element;
@@ -449,36 +400,7 @@
 				//$(element).parents(".col-sm-9").addClass("has-success").removeClass("has-error");
 				$(label).closest('.form-group').addClass('has-success').removeClass('has-error');
 			}
-
-			//	success: function (label, element) {
-			//	// Add the span element, if doesn't exists, and apply the icon classes to it.
-			//	if (!$(element).next("span")[0]) {
-			//		$("<span class='glyphicon glyphicon-ok form-control-feedback'></span>").insertAfter($(element));
-			//	}
-			//},
-			//highlight: function (element, errorClass, validClass) {
-			//	$(element).parents(".col-sm-5").addClass("has-error").removeClass("has-success");
-			//	$(element).next("span").addClass("glyphicon-remove").removeClass("glyphicon-ok");
-			//},
-			//unhighlight: function (element, errorClass, validClass) {
-			//	$(element).parents(".col-sm-5").addClass("has-success").removeClass("has-error");
-			//	$(element).next("span").addClass("glyphicon-ok").removeClass("glyphicon-remove");
-			//}
-
 		});
 	});
 </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
 

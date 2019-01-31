@@ -18,7 +18,21 @@ function setBoolValue(val) {
 	return strText;
 }
 
+function ToJavaScriptDate(value) {
+	if (value != null) {
+		var pattern = /Date\(([^)]+)\)/;
+		var results = pattern.exec(value);
+		var dt = new Date(parseFloat(results[1]));
+
+		return (dt.getMonth() + 1) + "/" + dt.getDate() + "/" + dt.getFullYear();
+	}
+	else {
+		return "";
+	}
+}
+
 function getNavigationNum(current, { range, pages, start = 1 }) {
+
 	const paging = [];
 	var i = Math.min(pages + start - range, Math.max(start, current - (range / 2 | 0)));
 	const end = i + range;
@@ -31,14 +45,17 @@ function getNavigationNum(current, { range, pages, start = 1 }) {
 }
 
 
-function SetPageNavigation(totalPage, currentPage, pagesize) {
+function SetPageNavigation(totalPage, currentPage, pagesize, totalCount) {
 	var template = "";
 	var TotalPages = totalPage;
 	var CurrentPage = currentPage;
 	var PageNumberArray = [];
 
-	var pageCount = (TotalPages / pagesize) + (TotalPages % pagesize != 0) ? 1 : 0;
-	const pageNums = { range: pageCount, pages: TotalPages };
+	var raminsCnt = (totalCount % pagesize != 0) ? 1 : 0;
+	var pageCount = Math.floor(totalCount / pagesize) + raminsCnt;
+	var NavRange = (pageCount > 5) ? 5 : pageCount;
+
+	const pageNums = { range: NavRange, pages: TotalPages };
 
 	PageNumberArray = getNavigationNum(currentPage, pageNums);
 
@@ -59,8 +76,8 @@ function SetPageNavigation(totalPage, currentPage, pagesize) {
 			'<li class="prev disabled"><a href="#"><i class="fa fa-angle-left"></i></a></li>';
 	}
 	else {
-		template = template + '<li class="first"><a href="#" onclick="BindDataToList(' + FirstPage + ')"><i class="fa fa-angle-double-left"></i></a></li>' +
-			'<li class="prev"><a href="#" onclick="BindDataToList(' + BackwardOne + ')"><i class="fa fa-angle-left"></i></a></li>';
+		template = template + '<li class="first"><a href="#" onclick="BindDataToList(' + FirstPage + ', ' + pagesize +')"><i class="fa fa-angle-double-left"></i></a></li>' +
+			'<li class="prev"><a href="#" onclick="BindDataToList(' + BackwardOne + ', ' + pagesize +')"><i class="fa fa-angle-left"></i></a></li>';
 	}
 
 	for (var i = 0; i < PageNumberArray.length; i++) {
@@ -68,7 +85,7 @@ function SetPageNavigation(totalPage, currentPage, pagesize) {
 		if (CurrentPage == PageNumberArray[i])
 			template = template + '<li class="active"><a href = "#">' + PageNumberArray[i] + '</a></li>';
 		else
-			template = template + '<li><a onclick="BindDataToList(' + PageNumberArray[i] + ')" href="#">' + PageNumberArray[i] + '</a></li>';
+			template = template + '<li><a onclick="BindDataToList(' + PageNumberArray[i] + ', ' + pagesize +')" href="#">' + PageNumberArray[i] + '</a></li>';
 	}
 
 	if (currentPage >= TotalPages) {
@@ -76,8 +93,8 @@ function SetPageNavigation(totalPage, currentPage, pagesize) {
 		template = template + '<li class="last disabled"><a href="#"><i class="fa fa-angle-double-right"></i></a></li></ul>';
 	}
 	else {
-		template = template + '<li class="next"><a href="#" onclick="BindDataToList(' + ForwardOne + ')"><i class="fa fa-angle-right"></i></a></li>';
-		template = template + '<li class="last"><a href="#" onclick="BindDataToList(' + LastPage + ')"><i class="fa fa-angle-double-right"></i></a></li></ul>';
+		template = template + '<li class="next"><a href="#" onclick="BindDataToList(' + ForwardOne + ', ' + pagesize +')"><i class="fa fa-angle-right"></i></a></li>';
+		template = template + '<li class="last"><a href="#" onclick="BindDataToList(' + LastPage + ', ' + pagesize +')"><i class="fa fa-angle-double-right"></i></a></li></ul>';
 	}
 
 	$("#pagingArea").append(template);
@@ -146,10 +163,10 @@ function successNotify(title, msg) {
 	});
 }
 
-function infoNotify() {
+function infoNotify(title, msg) {
 	var notice = new PNotify({
-		title: 'Notification',
-		text: 'Some notification text.',
+		title: title,
+		text: msg,
 		type: 'info',
 		addclass: 'stack-bar-bottom',
 		stack: stack_bar_bottom,

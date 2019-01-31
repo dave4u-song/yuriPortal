@@ -73,13 +73,13 @@ namespace yuriPortal.Web.Controllers
 				{
 					dbLang.SaveLang(langs);
 
-					return Json(new { success = true, responseText = "Board is successfuly saved!" }, JsonRequestBehavior.AllowGet);
+					return Json(new { success = true, responseText = "The message is successfuly saved!" }, JsonRequestBehavior.AllowGet);
 
 				}
 				else
 				{
 
-					return Json(new { success = false, responseText = "Board is not saved." }, JsonRequestBehavior.AllowGet);
+					return Json(new { success = false, responseText = "The message is not saved." }, JsonRequestBehavior.AllowGet);
 				}
 			}
 			catch (Exception ex)

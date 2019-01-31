@@ -55,8 +55,6 @@ namespace yuriPortal.Web
 
 			//Default Layout Javascript
 			bundles.Add(new StyleBundle("~/Script/asset").Include(
-							"~/Scripts/modernizr/modernizr.js",
-							"~/Scripts/jquery/jquery.js",
 							"~/Scripts/jquery-browser-mobile/jquery.browser.mobile.js",
 							"~/Content/bootstrap/js/bootstrap.js",
 							"~/Scripts/nanoscroller/nanoscroller.js",
