@@ -1,4 +1,4 @@
-# Content management system Project
+# Content Management System Project
 ASP.NET MVC Entity Framwork(Code Base)
 
 * ASP.NET MVC 5
